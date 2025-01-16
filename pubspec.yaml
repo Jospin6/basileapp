@@ -41,7 +41,7 @@ dependencies:
   cloud_firestore: ^5.6.1
   connectivity_plus: ^6.1.2
   shared_preferences: ^2.3.5
-  flutter_sms: ^2.3.3
+  # flutter_sms: ^2.3.3
 
 dev_dependencies:
   flutter_test:
