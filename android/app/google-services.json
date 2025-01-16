@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "737641305687",
+    "project_id": "basileapp-ead0d",
+    "storage_bucket": "basileapp-ead0d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:737641305687:android:fd15604e2e5f3b88df7512",
+        "android_client_info": {
+          "package_name": "com.example.basileapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAp2Od3MXsWxOVn5sqyJ8mdEbFxE6YTCoo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
