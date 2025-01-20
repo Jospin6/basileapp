@@ -1,3 +1,4 @@
+import 'package:basileapp/db/database_helper.dart';
 import 'package:flutter/material.dart';
 
 class SingleClientPage extends StatefulWidget {
@@ -12,15 +13,33 @@ class SingleClientPage extends StatefulWidget {
 class _SingleClientPageState extends State<SingleClientPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _amountController = TextEditingController();
-  String? _selectedTaxType;
+  Map<String, dynamic>? _selectedTaxType;
 
   // Liste des types de taxes
-  final List<String> _taxTypes = ["Taxe mensuelle", "Taxe annuelle", "Taxe journalière"];
+  List<Map<String, dynamic>> _taxTypes = [];
+  String taxe = "Journalier";
+  double amountTaxe = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchTaxes();
+  }
 
   @override
   void dispose() {
     _amountController.dispose();
     super.dispose();
+  }
+
+  void fetchTaxes() async {
+    DatabaseHelper dbHelper = DatabaseHelper();
+    String taxesType = "Journalier"; // Remplacez par le type de taxe souhaité
+    List<Map<String, dynamic>> taxes = await dbHelper.getTaxesByType(taxesType);
+
+    setState(() {
+      _taxTypes = taxes; // Met à jour l'état avec la liste des clients
+    }); // Affiche les taxes récupérées
   }
 
   void _openAddTaxDialog() {
@@ -35,17 +54,19 @@ class _SingleClientPageState extends State<SingleClientPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 // Menu déroulant pour le type de taxe
-                DropdownButtonFormField<String>(
+                DropdownButtonFormField<Map<String, dynamic>>(
                   value: _selectedTaxType,
-                  items: _taxTypes.map((String taxType) {
-                    return DropdownMenuItem<String>(
-                      value: taxType,
-                      child: Text(taxType),
+                  items: _taxTypes.map((taxType) {
+                    // Correction ici pour la structure
+                    return DropdownMenuItem<Map<String, dynamic>>(
+                      value: taxType['id'],
+                      child: Text('${taxType['name']}'),
                     );
                   }).toList(),
-                  onChanged: (String? newValue) {
+                  onChanged: (Map<String, dynamic>? newValue) {
                     setState(() {
                       _selectedTaxType = newValue;
+                      amountTaxe = newValue!['amount'];
                     });
                   },
                   decoration: const InputDecoration(
@@ -53,7 +74,7 @@ class _SingleClientPageState extends State<SingleClientPage> {
                     border: OutlineInputBorder(),
                   ),
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
+                    if (value == null) {
                       return "Veuillez sélectionner un type de taxe";
                     }
                     return null;
@@ -89,15 +110,22 @@ class _SingleClientPageState extends State<SingleClientPage> {
               child: const Text("Annuler"),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 if (_formKey.currentState!.validate()) {
                   // Traitement des données
                   final taxData = {
-                    "taxType": _selectedTaxType,
-                    "amount": double.parse(_amountController.text),
-                    "clientID": widget.clientID,
+                    "id_client": widget.clientID,
+                    "id_taxe": _selectedTaxType,
+                    "id_agent": 1,
+                    "amount_tot": amountTaxe,
+                    "amount_recu": double.parse(_amountController.text),
+                    "created_at": DateTime.now().toIso8601String()
                   };
                   print("Taxe ajoutée : $taxData");
+
+                  // Insérer les données dans la base de données
+                  DatabaseHelper dbHelper = DatabaseHelper();
+                  await dbHelper.insertPayment(taxData);
 
                   // Nettoyer les champs
                   _selectedTaxType = null;
@@ -118,11 +146,50 @@ class _SingleClientPageState extends State<SingleClientPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Détails du client")),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: _openAddTaxDialog,
-          child: const Text("Ajouter une taxe"),
-        ),
+      body: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              InkWell(
+                onTap: () {
+                  _openAddTaxDialog;
+                  setState(() {
+                    taxe = "Journalier";
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: const Text("Jour"),
+                ),
+              ),
+              InkWell(
+                onTap: () {
+                  _openAddTaxDialog;
+                  setState(() {
+                    taxe = "Mensuel";
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: const Text("Mois"),
+                ),
+              ),
+              InkWell(
+                onTap: () {
+                  _openAddTaxDialog;
+                  setState(() {
+                    taxe = "Annuel";
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: const Text("Année"),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

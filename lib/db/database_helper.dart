@@ -138,6 +138,20 @@ class DatabaseHelper {
     return await db.query('taxes');  
   }  
 
+  // Fonction pour récupérer les taxes par type  
+  Future<List<Map<String, dynamic>>> getTaxesByType(String type) async {  
+    final db = await database;  
+    
+    // Exécution de la requête pour récupérer les taxes selon le type  
+    final List<Map<String, dynamic>> taxes = await db.query(  
+      'taxes',   
+      where: 'type = ?',   
+      whereArgs: [type]  
+    );  
+    
+    return taxes;  
+  }  
+
   // Fonction pour insérer un paiement  
   Future<void> insertPayment(Map<String, dynamic> paymentData) async {  
     final db = await database;  

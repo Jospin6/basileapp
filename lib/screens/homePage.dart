@@ -1,4 +1,7 @@
+import 'package:basileapp/screens/agentsPage.dart';
 import 'package:basileapp/screens/clientPage.dart';
+import 'package:basileapp/screens/connexionPage.dart';
+import 'package:basileapp/screens/singleAgentPage.dart';
 import 'package:flutter/material.dart';
 
 class Homepage extends StatefulWidget {
@@ -61,17 +64,36 @@ class _HomepageState extends State<Homepage> {
               title: const Text('Accueil'),
               onTap: () {
                 Navigator.pop(context); // Ferme la Drawer
-                // Ajoutez une action ici
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Homepage(),
+                  ),
+                );
               },
             ),
             ListTile(
               leading: const Icon(Icons.person),
               title: const Text('Clients'),
               onTap: () {
+                Navigator.pop(context); // Ferme la Drawer
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => const ClientPage(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('Agents'),
+              onTap: () {
+                Navigator.pop(context); // Ferme la Drawer
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AgentsPage(),
                   ),
                 );
               },
@@ -87,6 +109,19 @@ class _HomepageState extends State<Homepage> {
             const Spacer(),
             const Divider(),
             ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('Mon compte'),
+              onTap: () {
+                Navigator.pop(context); // Ferme la Drawer
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SingleAgentPage(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
               leading: const Icon(Icons.logout, color: Colors.redAccent),
               title: const Text(
                 'Logout',
@@ -94,7 +129,12 @@ class _HomepageState extends State<Homepage> {
               ),
               onTap: () {
                 Navigator.pop(context); // Ferme la Drawer
-                // Ajoutez une action ici
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ConnexionPage(),
+                  ),
+                );
               },
             ),
           ],
