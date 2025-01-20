@@ -121,11 +121,19 @@ class _SingleClientPageState extends State<SingleClientPage> {
                     "amount_recu": double.parse(_amountController.text),
                     "created_at": DateTime.now().toIso8601String()
                   };
+                  final taxHistData = {
+                    "id_client": widget.clientID,
+                    "id_taxe": _selectedTaxType,
+                    "id_agent": 1,
+                    "amount_recu": double.parse(_amountController.text),
+                    "created_at": DateTime.now().toIso8601String()
+                  };
                   print("Taxe ajoutée : $taxData");
 
                   // Insérer les données dans la base de données
                   DatabaseHelper dbHelper = DatabaseHelper();
                   await dbHelper.insertPayment(taxData);
+                  await dbHelper.insertPaymentHistory(taxHistData);
 
                   // Nettoyer les champs
                   _selectedTaxType = null;
@@ -145,52 +153,69 @@ class _SingleClientPageState extends State<SingleClientPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Détails du client")),
-      body: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+        appBar: AppBar(title: const Text("Détails du client")),
+        body: SingleChildScrollView(
+          child: Column(
             children: [
-              InkWell(
-                onTap: () {
-                  _openAddTaxDialog;
-                  setState(() {
-                    taxe = "Journalier";
-                  });
-                },
-                child: Container(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: const Text("Jour"),
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  InkWell(
+                    onTap: () {
+                      _openAddTaxDialog;
+                      setState(() {
+                        taxe = "Journalier";
+                      });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: const Text("Jour"),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      _openAddTaxDialog;
+                      setState(() {
+                        taxe = "Mensuel";
+                      });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: const Text("Mois"),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      _openAddTaxDialog;
+                      setState(() {
+                        taxe = "Annuel";
+                      });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: const Text("Année"),
+                    ),
+                  ),
+                ],
               ),
-              InkWell(
-                onTap: () {
-                  _openAddTaxDialog;
-                  setState(() {
-                    taxe = "Mensuel";
-                  });
-                },
-                child: Container(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: const Text("Mois"),
+              const SizedBox(height: 10,),
+              Container(
+                width: double.infinity,
+                height: 150,
+                margin: const EdgeInsets.all(10),
+                child: const Card(
+                  elevation: 4,
+                  child: Column(
+                    children: [
+                      Row(children: [],),
+                      SizedBox(height: 10,),
+                      Row(children: [],),
+                    ],
+                  ),
                 ),
-              ),
-              InkWell(
-                onTap: () {
-                  _openAddTaxDialog;
-                  setState(() {
-                    taxe = "Annuel";
-                  });
-                },
-                child: Container(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: const Text("Année"),
-                ),
-              ),
+              )
             ],
           ),
-        ],
-      ),
-    );
+        ));
   }
 }

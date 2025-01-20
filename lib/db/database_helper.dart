@@ -174,6 +174,26 @@ class DatabaseHelper {
     ''');  
   }  
 
+  // Fonction pour récupérer le dernier paiement d'un client spécifique  
+  Future<Map<String, dynamic>?> getLastPaymentForClient(int clientId) async {  
+    final db = await database;  
+
+    final List<Map<String, dynamic>> results = await db.rawQuery('''  
+      SELECT p.*, c.name AS client_name, t.name AS tax_name  
+      FROM paiements p  
+      INNER JOIN clients c ON p.id_client = c.id  
+      INNER JOIN taxes t ON p.id_taxe = t.id  
+      WHERE p.id_client = ?  
+      ORDER BY p.created_at DESC  
+      LIMIT 1  
+    ''', [clientId]);  
+
+    if (results.isNotEmpty) {  
+      return results.first; // Retourne le premier résultat qui est le dernier paiement  
+    }  
+    return null; // Retourne null s'il n'y a pas de paiement  
+  }  
+
   // Fonction pour récupérer les paiements effectués par un agent spécifique  
   Future<List<Map<String, dynamic>>> getPaymentsByAgent(int agentId) async {  
     final db = await database;  
