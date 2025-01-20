@@ -1,3 +1,4 @@
+import 'package:basileapp/db/database_helper.dart';
 import 'package:flutter/material.dart';
 
 class ClientPage extends StatefulWidget {
@@ -135,7 +136,7 @@ class _ClientPageState extends State<ClientPage> {
               child: const Text("Annuler"),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 if (_formKey.currentState!.validate()) {
                   // Traitement des données
                   final clientData = {
@@ -145,8 +146,13 @@ class _ClientPageState extends State<ClientPage> {
                     "address": _addressController.text,
                     "phone": _phoneController.text,
                     "zone": _zoneController.text,
+                    "agent": 1
                   };
                   print("Client ajouté : $clientData");
+
+                  // Insérer les données dans la base de données
+                  DatabaseHelper dbHelper = DatabaseHelper();
+                  await dbHelper.insertClient(clientData);
 
                   // Nettoyer les champs
                   _nameController.clear();
