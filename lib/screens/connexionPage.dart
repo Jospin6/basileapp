@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class Connexion extends StatefulWidget {
-  const Connexion({super.key});
+class ConnexionPage extends StatefulWidget {
+  const ConnexionPage({super.key});
 
   @override
-  State<Connexion> createState() => _ConnexionState();
+  State<ConnexionPage> createState() => _ConnexionPageState();
 }
 
-class _ConnexionState extends State<Connexion> {
+class _ConnexionPageState extends State<ConnexionPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
