@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -37,24 +38,46 @@ class _SettingsPageState extends State<SettingsPage>
     super.dispose();
   }
 
-  void _submitTaxForm() {
+  void _submitTaxForm() async {
     if (_selectedTaxType != null &&
         _taxNameController.text.isNotEmpty &&
         _taxAmountController.text.isNotEmpty) {
-      print("Taxe ajoutée :");
-      print("Type : $_selectedTaxType");
-      print("Nom : ${_taxNameController.text}");
-      print("Montant : ${_taxAmountController.text}");
+      // Préparation des données
+      String? taxType = _selectedTaxType;
+      String taxName = _taxNameController.text;
+      double taxAmount = double.tryParse(_taxAmountController.text) ?? 0.0;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Taxe ajoutée avec succès !")),
-      );
+      // Envoi des données à Firebase
+      try {
+        await FirebaseFirestore.instance.collection('taxes').add({
+          'type': taxType,
+          'name': taxName,
+          'amount': taxAmount,
+          'createdAt':
+              FieldValue.serverTimestamp(),
+        });
 
-      _taxNameController.clear();
-      _taxAmountController.clear();
-      setState(() {
-        _selectedTaxType = null;
-      });
+        print("Taxe ajoutée :");
+        print("Type : $taxType");
+        print("Nom : $taxName");
+        print("Montant : $taxAmount");
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Taxe ajoutée avec succès !")),
+        );
+
+        // Réinitialisation des champs
+        _taxNameController.clear();
+        _taxAmountController.clear();
+        setState(() {
+          _selectedTaxType = null;
+        });
+      } catch (e) {
+        print("Erreur lors de l'ajout de la taxe : $e");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Erreur lors de l'ajout de la taxe.")),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Veuillez remplir tous les champs !")),
@@ -62,21 +85,36 @@ class _SettingsPageState extends State<SettingsPage>
     }
   }
 
-  void _submitZoneForm() {
-    if (_zoneNameController.text.isNotEmpty) {
-      print("Zone ajoutée : ${_zoneNameController.text}");
+  void _submitZoneForm() async {  
+  if (_zoneNameController.text.isNotEmpty) {  
+    String zoneName = _zoneNameController.text;  
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Zone ajoutée avec succès !")),
-      );
+    // Envoi des données à Firebase  
+    try {  
+      await FirebaseFirestore.instance.collection('zones').add({  
+        'name': zoneName,  
+        'createdAt': FieldValue.serverTimestamp(), // Optionnel: pour le timestamp  
+      });  
 
-      _zoneNameController.clear();
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Veuillez entrer le nom de la zone !")),
-      );
-    }
-  }
+      print("Zone ajoutée : $zoneName");  
+
+      ScaffoldMessenger.of(context).showSnackBar(  
+        const SnackBar(content: Text("Zone ajoutée avec succès !")),  
+      );  
+
+      _zoneNameController.clear();  
+    } catch (e) {  
+      print("Erreur lors de l'ajout de la zone : $e");  
+      ScaffoldMessenger.of(context).showSnackBar(  
+        const SnackBar(content: Text("Erreur lors de l'ajout de la zone.")),  
+      );  
+    }  
+  } else {  
+    ScaffoldMessenger.of(context).showSnackBar(  
+      const SnackBar(content: Text("Veuillez entrer le nom de la zone !")),  
+    );  
+  }  
+}
 
   @override
   Widget build(BuildContext context) {
