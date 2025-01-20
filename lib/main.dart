@@ -1,6 +1,8 @@
+import 'package:basileapp/screens/connexionPage.dart';
 import 'package:basileapp/screens/homePage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -38,11 +40,35 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  String? agentID;
 
   void _incrementCounter() {
     setState(() {
       _counter++;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadUserData();
+  }
+
+  Future<void> loadUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? id = prefs.getString('id');
+    String? name = prefs.getString('name');
+    String? surname = prefs.getString('surname');
+    String? zone = prefs.getString('zone');
+
+    if (id != null) {
+      print("ID: $id, Name: $name, Surname: $surname, Zone: $zone");
+      setState(() {
+        agentID = id;
+      });
+    } else {
+      print("Aucune donnée utilisateur trouvée.");
+    }
   }
 
   @override
@@ -64,15 +90,17 @@ class _MyHomePageState extends State<MyHomePage> {
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const Homepage(),
-                  ),
-                );
-              }, 
-              child: const Text("Commencer"))
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => agentID != null
+                          ? const Homepage()
+                          : const ConnexionPage(),
+                    ),
+                  );
+                },
+                child: const Text("Commencer"))
           ],
         ),
       ),

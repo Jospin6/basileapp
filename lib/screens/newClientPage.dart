@@ -1,5 +1,6 @@
 import 'package:basileapp/db/database_helper.dart';
-import 'package:flutter/material.dart';  
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';  
 
 class NewClientPage extends StatefulWidget {  
   const NewClientPage({super.key});  
@@ -17,7 +18,29 @@ class _NewClientPageState extends State<NewClientPage> {
   final TextEditingController _commerceController = TextEditingController();  
   final TextEditingController _addressController = TextEditingController();  
   final TextEditingController _phoneController = TextEditingController();  
-  final TextEditingController _zoneController = TextEditingController();  
+  String? agentID;
+  String? zoneName;
+
+  @override
+  void initState() {
+    super.initState();
+    loadUserData();
+  } 
+
+  Future<void> loadUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? id = prefs.getString('id');
+    String? zone = prefs.getString('zone');
+
+    if (id != null) {
+      setState(() {
+        agentID = id;
+        zoneName = zone;
+      });
+    } else {
+      print("Aucune donnée utilisateur trouvée.");
+    }
+  }
 
   @override  
   Widget build(BuildContext context) {  
@@ -102,21 +125,7 @@ class _NewClientPageState extends State<NewClientPage> {
                     }  
                     return null;  
                   },  
-                ),  
-                const SizedBox(height: 10),  
-                TextFormField(  
-                  controller: _zoneController,  
-                  decoration: const InputDecoration(  
-                    labelText: "Zone d'activité",  
-                    border: OutlineInputBorder(),  
-                  ),  
-                  validator: (value) {  
-                    if (value == null || value.isEmpty) {  
-                      return "Veuillez entrer la zone d'activité";  
-                    }  
-                    return null;  
-                  },  
-                ),  
+                ), 
                 const SizedBox(height: 20),  
                 ElevatedButton(  
                   onPressed: () async {  
@@ -128,8 +137,8 @@ class _NewClientPageState extends State<NewClientPage> {
                         "commerce": _commerceController.text,  
                         "address": _addressController.text,  
                         "phone": _phoneController.text,  
-                        "zone": _zoneController.text,  
-                        "agent": 1, // Remplacez par l'ID de l'agent approprié
+                        "zone": zoneName,  
+                        "agent": agentID, // Remplacez par l'ID de l'agent approprié
                         "created_at": DateTime.now().toIso8601String()  
                       };  
                       print("Client ajouté : $clientData");  
@@ -144,7 +153,6 @@ class _NewClientPageState extends State<NewClientPage> {
                       _commerceController.clear();  
                       _addressController.clear();  
                       _phoneController.clear();  
-                      _zoneController.clear();  
 
                       // Afficher un message de succès ou rediriger si nécessaire  
                       ScaffoldMessenger.of(context).showSnackBar(  

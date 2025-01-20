@@ -1,3 +1,5 @@
+import 'package:basileapp/screens/agentsPage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class NewAgentPage extends StatefulWidget {
@@ -17,7 +19,11 @@ class _NewAgentPageState extends State<NewAgentPage> {
   String? _selectedRole;
 
   // Liste des zones d'activité
-  final List<String> _zones = ["Centre-ville", "Marché central", "Quartier résidentiel"];
+  final List<String> _zones = [
+    "Centre-ville",
+    "Marché central",
+    "Quartier résidentiel"
+  ];
 
   // Liste des rôles disponibles
   final List<String> _roles = ["Agent", "Admin"];
@@ -30,7 +36,7 @@ class _NewAgentPageState extends State<NewAgentPage> {
     super.dispose();
   }
 
-  void _submitForm() {
+  void _submitForm() async {
     if (_formKey.currentState!.validate()) {
       final agentData = {
         "name": _nameController.text,
@@ -41,18 +47,35 @@ class _NewAgentPageState extends State<NewAgentPage> {
         "role": _selectedRole,
       };
 
-      print("Agent ajouté : $agentData");
+      try {
+        // Envoi des données à Firestore
+        await FirebaseFirestore.instance.collection('users').add(agentData);
+        print("Agent ajouté : $agentData");
 
-      // Nettoyer le formulaire
-      _formKey.currentState!.reset();
-      setState(() {
-        _selectedZone = null;
-        _selectedRole = null;
-      });
+        // Nettoyer le formulaire
+        _formKey.currentState!.reset();
+        setState(() {
+          _selectedZone = null;
+          _selectedRole = null;
+        });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Agent ajouté avec succès !")),
-      );
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Agent ajouté avec succès !")),
+        );
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const AgentsPage(),
+          ),
+        );
+      } catch (e) {
+        // Gestion des erreurs
+        print("Erreur lors de l'ajout de l'agent : $e");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Erreur lors de l'ajout de l'agent.")),
+        );
+      }
     }
   }
 

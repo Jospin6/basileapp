@@ -1,5 +1,6 @@
 import 'package:basileapp/db/database_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SingleClientPage extends StatefulWidget {
   final dynamic clientID;
@@ -19,17 +20,32 @@ class _SingleClientPageState extends State<SingleClientPage> {
   List<Map<String, dynamic>> _taxTypes = [];
   String taxe = "Journalier";
   double amountTaxe = 0;
+  String? agentID;
 
   @override
   void initState() {
     super.initState();
     fetchTaxes();
+    loadUserData();
   }
 
   @override
   void dispose() {
     _amountController.dispose();
     super.dispose();
+  }
+
+  Future<void> loadUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? id = prefs.getString('id');
+
+    if (id != null) {
+      setState(() {
+        agentID = id;
+      });
+    } else {
+      print("Aucune donnée utilisateur trouvée.");
+    }
   }
 
   void fetchTaxes() async {
@@ -116,7 +132,7 @@ class _SingleClientPageState extends State<SingleClientPage> {
                   final taxData = {
                     "id_client": widget.clientID,
                     "id_taxe": _selectedTaxType,
-                    "id_agent": 1,
+                    "id_agent": agentID,
                     "amount_tot": amountTaxe,
                     "amount_recu": double.parse(_amountController.text),
                     "created_at": DateTime.now().toIso8601String()
@@ -124,7 +140,7 @@ class _SingleClientPageState extends State<SingleClientPage> {
                   final taxHistData = {
                     "id_client": widget.clientID,
                     "id_taxe": _selectedTaxType,
-                    "id_agent": 1,
+                    "id_agent": agentID,
                     "amount_recu": double.parse(_amountController.text),
                     "created_at": DateTime.now().toIso8601String()
                   };

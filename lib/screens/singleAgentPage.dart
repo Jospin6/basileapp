@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SingleAgentPage extends StatefulWidget {
   const SingleAgentPage({super.key});
@@ -10,11 +11,37 @@ class SingleAgentPage extends StatefulWidget {
 class _SingleAgentPageState extends State<SingleAgentPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  String? agentID;
+  String? agentName;
+  String? agentSurname;
+  String? agentZone;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this); // Trois onglets
+    loadUserData();
+  }
+
+
+  Future<void> loadUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? id = prefs.getString('id');
+    String? name = prefs.getString('name');
+    String? surname = prefs.getString('surname');
+    String? zone = prefs.getString('zone');
+
+    if (id != null) {
+      print("ID: $id, Name: $name, Surname: $surname, Zone: $zone");
+      setState(() {
+        agentID = id;
+        agentName = name;
+        agentSurname = surname;
+        agentZone = zone;
+      });
+    } else {
+      print("Aucune donnée utilisateur trouvée.");
+    }
   }
 
   @override
