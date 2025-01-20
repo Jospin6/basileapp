@@ -1,4 +1,6 @@
 import 'package:basileapp/db/database_helper.dart';
+import 'package:basileapp/outils/paiement.dart';
+import 'package:basileapp/screens/paiementsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,6 +17,7 @@ class _SingleClientPageState extends State<SingleClientPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _amountController = TextEditingController();
   Map<String, dynamic>? _selectedTaxType;
+  DatabaseHelper dbHelper = DatabaseHelper();
 
   // Liste des types de taxes
   List<Map<String, dynamic>> _taxTypes = [];
@@ -214,7 +217,9 @@ class _SingleClientPageState extends State<SingleClientPage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 10,),
+              const SizedBox(
+                height: 10,
+              ),
               Container(
                 width: double.infinity,
                 height: 150,
@@ -223,12 +228,60 @@ class _SingleClientPageState extends State<SingleClientPage> {
                   elevation: 4,
                   child: Column(
                     children: [
-                      Row(children: [],),
-                      SizedBox(height: 10,),
-                      Row(children: [],),
+                      Row(
+                        children: [],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [],
+                      ),
                     ],
                   ),
                 ),
+              ),
+              const SizedBox(height: 10,),
+              Row( children: [
+                ElevatedButton(
+                  onPressed: (){
+                    Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PaiementsPage(clientID: widget.clientID,),
+                  ),
+                );
+                  }, 
+                  child: const Text("plus", style: TextStyle(color: Colors.blue),))
+              ],),
+              const SizedBox(height: 10,),
+              FutureBuilder<List<Payment>>(
+                future: dbHelper.fetchLatestPayments(widget.clientID),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Erreur: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text('Aucun paiement trouvé.'));
+                  }
+
+                  final payments = snapshot.data!;
+
+                  return ListView.builder(
+                    itemCount: payments.length,
+                    itemBuilder: (context, index) {
+                      final payment = payments[index];
+                      return ListTile(
+                        title: Text('Montant Reçu: ${payment.amountRecu}'),
+                        subtitle: Text(
+                          'Client: ${payment.clientName}, Taxe: ${payment.taxeName}, Date: ${payment.createdAt}',
+                        ),
+                        trailing: Text('Total: ${payment.amountTot}'),
+                      );
+                    },
+                  );
+                },
               )
             ],
           ),
