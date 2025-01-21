@@ -76,7 +76,6 @@ class _SingleClientPageState extends State<SingleClientPage> {
                 DropdownButtonFormField<Map<String, dynamic>>(
                   value: _selectedTaxType,
                   items: _taxTypes.map((taxType) {
-                    // Correction ici pour la structure
                     return DropdownMenuItem<Map<String, dynamic>>(
                       value: taxType['id'],
                       child: Text('${taxType['name']}'),
@@ -169,14 +168,69 @@ class _SingleClientPageState extends State<SingleClientPage> {
     );
   }
 
+  void _showUpdatePaymentDialog(BuildContext context, Payment payment) {
+    final TextEditingController _updateAmountController =
+        TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Mettre à jour le paiement"),
+          content: TextFormField(
+            controller: _updateAmountController,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+              labelText: "Montant supplémentaire",
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text("Annuler"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final enteredAmount =
+                    double.tryParse(_updateAmountController.text);
+
+                if (enteredAmount != null) {
+                  final newAmountRecu = payment.amountRecu + enteredAmount;
+
+                  await dbHelper.updatePayment(payment.id, {
+                    "amount_recu": newAmountRecu,
+                  });
+
+                  Navigator.pop(context);
+
+                  setState(() {});
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Paiement mis à jour avec succès"),
+                    ),
+                  );
+                }
+              },
+              child: const Text("Mettre à jour"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text("Détails du client")),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Row(
+      appBar: AppBar(title: const Text("Détails du client")),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+             Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   InkWell(
@@ -255,36 +309,47 @@ class _SingleClientPageState extends State<SingleClientPage> {
                   child: const Text("plus", style: TextStyle(color: Colors.blue),))
               ],),
               const SizedBox(height: 10,),
-              FutureBuilder<List<Payment>>(
-                future: dbHelper.fetchLatestPayments(widget.clientID),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Erreur: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text('Aucun paiement trouvé.'));
-                  }
-
-                  final payments = snapshot.data!;
-
-                  return ListView.builder(
-                    itemCount: payments.length,
-                    itemBuilder: (context, index) {
-                      final payment = payments[index];
-                      return ListTile(
-                        title: Text('Montant Reçu: ${payment.amountRecu}'),
-                        subtitle: Text(
-                          'Client: ${payment.clientName}, Taxe: ${payment.taxeName}, Date: ${payment.createdAt}',
-                        ),
-                        trailing: Text('Total: ${payment.amountTot}'),
-                      );
-                    },
-                  );
-                },
-              )
-            ],
-          ),
-        ));
+            FutureBuilder<List<Payment>>(
+              future: dbHelper.fetchLatestPayments(widget.clientID),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text("Erreur: ${snapshot.error}"));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text("Aucun paiement trouvé"));
+                }
+            
+                final payments = snapshot.data!;
+            
+                return ListView.builder(
+                  itemCount: payments.length,
+                  itemBuilder: (context, index) {
+                    final payment = payments[index];
+            
+                    return ListTile(
+                      title: Text(
+                        'Montant Reçu: ${payment.amountRecu} Taxe: ${payment.taxeName}',
+                      ),
+                      subtitle: Text(
+                        'Client: ${payment.clientName}, Date: ${payment.createdAt}',
+                      ),
+                      trailing: payment.amountRecu < payment.amountTot
+                          ? IconButton(
+                              onPressed: () {
+                                _showUpdatePaymentDialog(context, payment);
+                              },
+                              icon: const Icon(Icons.payment, color: Colors.red),
+                            )
+                          : const Icon(Icons.check, color: Colors.green),
+                    );
+                  },
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
