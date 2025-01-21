@@ -230,122 +230,139 @@ class _SingleClientPageState extends State<SingleClientPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-             Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  InkWell(
-                    onTap: () {
-                      _openAddTaxDialog;
-                      setState(() {
-                        taxe = "Journalier";
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.only(right: 10),
-                      child: const Text("Jour"),
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      _openAddTaxDialog;
-                      setState(() {
-                        taxe = "Mensuel";
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.only(right: 10),
-                      child: const Text("Mois"),
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      _openAddTaxDialog;
-                      setState(() {
-                        taxe = "Annuel";
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.only(right: 10),
-                      child: const Text("Année"),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Container(
-                width: double.infinity,
-                height: 150,
-                margin: const EdgeInsets.all(10),
-                child: const Card(
-                  elevation: 4,
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [],
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        children: [],
-                      ),
-                    ],
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                InkWell(
+                  onTap: () {
+                    _openAddTaxDialog;
+                    setState(() {
+                      taxe = "Journalier";
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: const Text("Jour"),
                   ),
                 ),
-              ),
-              const SizedBox(height: 10,),
-              Row( children: [
-                ElevatedButton(
-                  onPressed: (){
-                    Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PaiementsPage(clientID: widget.clientID,),
-                  ),
-                );
-                  }, 
-                  child: const Text("plus", style: TextStyle(color: Colors.blue),))
-              ],),
-              const SizedBox(height: 10,),
-            FutureBuilder<List<Payment>>(
-              future: dbHelper.fetchLatestPayments(widget.clientID),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text("Erreur: ${snapshot.error}"));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text("Aucun paiement trouvé"));
-                }
-            
-                final payments = snapshot.data!;
-            
-                return ListView.builder(
-                  itemCount: payments.length,
-                  itemBuilder: (context, index) {
-                    final payment = payments[index];
-            
-                    return ListTile(
-                      title: Text(
-                        'Montant Reçu: ${payment.amountRecu} Taxe: ${payment.taxeName}',
-                      ),
-                      subtitle: Text(
-                        'Client: ${payment.clientName}, Date: ${payment.createdAt}',
-                      ),
-                      trailing: payment.amountRecu < payment.amountTot
-                          ? IconButton(
-                              onPressed: () {
-                                _showUpdatePaymentDialog(context, payment);
-                              },
-                              icon: const Icon(Icons.payment, color: Colors.red),
-                            )
-                          : const Icon(Icons.check, color: Colors.green),
-                    );
+                InkWell(
+                  onTap: () {
+                    _openAddTaxDialog;
+                    setState(() {
+                      taxe = "Mensuel";
+                    });
                   },
-                );
-              },
+                  child: Container(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: const Text("Mois"),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    _openAddTaxDialog;
+                    setState(() {
+                      taxe = "Annuel";
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: const Text("Année"),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Container(
+              width: double.infinity,
+              height: 150,
+              margin: const EdgeInsets.all(10),
+              child: const Card(
+                elevation: 4,
+                child: Column(
+                  children: [
+                    Row(
+                      children: [],
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      children: [],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              children: [
+                ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PaiementsPage(
+                            clientID: widget.clientID,
+                          ),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      "plus",
+                      style: TextStyle(color: Colors.blue),
+                    ))
+              ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              padding: const EdgeInsets.only(left: 10, right: 10),
+              child: FutureBuilder<List<Payment>>(
+                future: dbHelper.fetchLatestPayments(widget.clientID),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text("Erreur: ${snapshot.error}"));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text("Aucun paiement trouvé"));
+                  }
+              
+                  final payments = snapshot.data!;
+              
+                  return ListView.builder(
+                    itemCount: payments.length,
+                    itemBuilder: (context, index) {
+                      final payment = payments[index];
+              
+                      return ListTile(
+                        title: Text(
+                          'Montant Reçu: ${payment.amountRecu} Taxe: ${payment.taxeName}',
+                        ),
+                        subtitle: Text(
+                          'Client: ${payment.clientName}, Date: ${payment.createdAt}',
+                        ),
+                        trailing: payment.amountRecu < payment.amountTot
+                            ? IconButton(
+                                onPressed: () {
+                                  _showUpdatePaymentDialog(context, payment);
+                                },
+                                icon:
+                                    const Icon(Icons.payment, color: Colors.red),
+                              )
+                            : const Icon(Icons.check, color: Colors.green),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ],
         ),
