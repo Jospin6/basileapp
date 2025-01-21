@@ -1,9 +1,11 @@
 import 'package:basileapp/screens/connexionPage.dart';
 import 'package:basileapp/screens/homePage.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() async {
   await Firebase.initializeApp(
@@ -49,9 +51,21 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
-  void initState() {
+  Future<void> initState() async {
     super.initState();
     loadUserData();
+
+    // Vérifie la connexion et exécute la méthode si connecté
+    bool connected = await isConnectedToInternet();
+    if (connected) {
+      await fetchAndStoreUserData(agentID!);
+    }
+  }
+
+  Future<bool> isConnectedToInternet() async {
+    var connectivityResult = await Connectivity().checkConnectivity();
+    return connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi;
   }
 
   Future<void> loadUserData() async {
@@ -68,6 +82,44 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     } else {
       print("Aucune donnée utilisateur trouvée.");
+    }
+  }
+
+  Future<void> fetchAndStoreUserData(String userId) async {
+    try {
+      // Connexion à Firestore
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      // Récupère le document utilisateur correspondant à l'ID donné
+      DocumentSnapshot userDoc =
+          await firestore.collection('users').doc(userId).get();
+
+      if (userDoc.exists) {
+        // Obtient les données utilisateur
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+
+        // Récupère les informations nécessaires
+        String id = userDoc.id; // ID du document
+        String name = userData['name'] ??
+            ''; // Utilisez une valeur par défaut si le champ est absent
+        String surname = userData['surname'] ?? '';
+        String zone = userData['zone'] ?? '';
+        String role = userData['role'] ?? '';
+
+        // Stocke les informations dans SharedPreferences
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('id', id);
+        await prefs.setString('name', name);
+        await prefs.setString('surname', surname);
+        await prefs.setString('zone', zone);
+        await prefs.setString('role', role);
+
+        print("Données utilisateur stockées avec succès.");
+      } else {
+        print("Aucun utilisateur trouvé avec cet ID : $userId");
+      }
+    } catch (e) {
+      print("Erreur lors de la récupération des données utilisateur : $e");
     }
   }
 
