@@ -19,14 +19,16 @@ class _NewAgentPageState extends State<NewAgentPage> {
   String? _selectedRole;
 
   // Liste des zones d'activité
-  final List<String> _zones = [
-    "Centre-ville",
-    "Marché central",
-    "Quartier résidentiel"
-  ];
+  final List<String> _zones = [];
 
   // Liste des rôles disponibles
   final List<String> _roles = ["Agent", "Admin"];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadZones();
+  }
 
   @override
   void dispose() {
@@ -34,6 +36,33 @@ class _NewAgentPageState extends State<NewAgentPage> {
     _surnameController.dispose();
     _phoneController.dispose();
     super.dispose();
+  }
+
+  Future<void> fetchZones(List<String> zonesList) async {
+    try {
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      // Récupérer toutes les zones de la collection 'zones'
+      QuerySnapshot querySnapshot = await firestore.collection('zones').get();
+
+      // Extraire les noms des zones et les ajouter à la liste
+      List<String> zones = querySnapshot.docs.map((doc) {
+        return doc['name'] as String; // Assurez-vous que le champ 'name' existe
+      }).toList();
+
+      // Mettre à jour la liste passée en paramètre
+      zonesList.clear();
+      zonesList.addAll(zones);
+
+      print("Zones récupérées avec succès : $zonesList");
+    } catch (e) {
+      print("Erreur lors de la récupération des zones : $e");
+    }
+  }
+
+  Future<void> _loadZones() async {
+    await fetchZones(_zones);
+    setState(() {}); // Mettre à jour l'interface utilisateur après le chargement
   }
 
   void _submitForm() async {
