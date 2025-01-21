@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SingleAgentPage extends StatefulWidget {
-  const SingleAgentPage({super.key});
+  final dynamic agentID;
+  const SingleAgentPage({super.key, required this.agentID});
 
   @override
   State<SingleAgentPage> createState() => _SingleAgentPageState();
@@ -11,7 +12,6 @@ class SingleAgentPage extends StatefulWidget {
 class _SingleAgentPageState extends State<SingleAgentPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  String? agentID;
   String? agentName;
   String? agentSurname;
   String? agentZone;
@@ -34,7 +34,6 @@ class _SingleAgentPageState extends State<SingleAgentPage>
     if (id != null) {
       print("ID: $id, Name: $name, Surname: $surname, Zone: $zone");
       setState(() {
-        agentID = id;
         agentName = name;
         agentSurname = surname;
         agentZone = zone;

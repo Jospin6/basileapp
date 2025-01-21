@@ -1,8 +1,10 @@
 import 'package:basileapp/screens/agentsPage.dart';
 import 'package:basileapp/screens/clientPage.dart';
 import 'package:basileapp/screens/connexionPage.dart';
+import 'package:basileapp/screens/settingsPage.dart';
 import 'package:basileapp/screens/singleAgentPage.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -12,6 +14,40 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
+  String? agentID;
+  String? agentName;
+  String? agentSurname;
+  String? agentZone;
+  String? agentRole;
+
+  Future<void> loadUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? id = prefs.getString('id');
+    String? name = prefs.getString('name');
+    String? surname = prefs.getString('surname');
+    String? zone = prefs.getString('zone');
+    String? role = prefs.getString('role');
+
+    if (id != null) {
+      print("ID: $id, Name: $name, Surname: $surname, Zone: $zone");
+      setState(() {
+        agentID = id;
+        agentName = name;
+        agentSurname = surname;
+        agentZone = zone;
+        agentRole = role;
+      });
+    } else {
+      print("Aucune donnée utilisateur trouvée.");
+    }
+  }
+
+  @override
+  initState() {
+    super.initState();
+    loadUserData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,27 +121,37 @@ class _HomepageState extends State<Homepage> {
                 );
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text('Agents'),
-              onTap: () {
-                Navigator.pop(context); // Ferme la Drawer
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AgentsPage(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Settings'),
-              onTap: () {
-                Navigator.pop(context); // Ferme la Drawer
-                // Ajoutez une action ici
-              },
-            ),
+            agentRole == "Admin"
+                ? ListTile(
+                    leading: const Icon(Icons.person),
+                    title: const Text('Agents'),
+                    onTap: () {
+                      Navigator.pop(context); // Ferme la Drawer
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AgentsPage(),
+                        ),
+                      );
+                    },
+                  )
+                : const Text(""),
+            agentRole == "Admin"
+                ? ListTile(
+                    leading: const Icon(Icons.settings),
+                    title: const Text('Settings'),
+                    onTap: () {
+                      Navigator.pop(context); // Ferme la Drawer
+                      // Ajoutez une action ici
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SettingsPage(),
+                        ),
+                      );
+                    },
+                  )
+                : const Text(""),
             const Spacer(),
             const Divider(),
             ListTile(
@@ -116,7 +162,9 @@ class _HomepageState extends State<Homepage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const SingleAgentPage(),
+                    builder: (context) => SingleAgentPage(
+                      agentID: agentID,
+                    ),
                   ),
                 );
               },
