@@ -38,7 +38,7 @@ class DatabaseHelper {
 
         await db.execute('''
           CREATE TABLE IF NOT EXISTS taxes (  
-            id INTEGER PRIMARY KEY AUTOINCREMENT,   
+            id INTEGER PRIMARY KEY,   
             type TEXT,   
             name TEXT,  
             amount REAL  
@@ -312,6 +312,11 @@ class DatabaseHelper {
     );
   }
 
+  Future<List<Map<String, dynamic>>> getAllPaymentsHistory() async {
+    final db = await database;
+    return await db.query('paiements_history');
+  }
+
   // Fonction pour récupérer tout l'historique des paiements d'un client
   Future<List<Map<String, dynamic>>> getPaymentHistoryByClient(
       int clientId) async {
@@ -361,5 +366,22 @@ class DatabaseHelper {
       where: 'id = ?',
       whereArgs: [id],
     );
+  }
+
+   Future<void> insertOrUpdateTaxes(List<Map<String, dynamic>> taxes) async {
+    final db = await database;
+
+    for (var tax in taxes) {
+      await db.insert(
+        'taxes',
+        {
+          'id': tax['id'],
+          'type': tax['type'],
+          'name': tax['name'],
+          'amount': tax['amount'],
+        },
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
   }
 }

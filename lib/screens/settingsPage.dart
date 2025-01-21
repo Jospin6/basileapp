@@ -1,3 +1,4 @@
+import 'package:basileapp/db/database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -38,6 +39,33 @@ class _SettingsPageState extends State<SettingsPage>
     super.dispose();
   }
 
+  Future<void> fetchAndSyncTaxes() async {
+    try {
+      DatabaseHelper dbHelper = DatabaseHelper();
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      // Récupération des données depuis la collection Firestore "taxes"
+      QuerySnapshot querySnapshot = await firestore.collection('taxes').get();
+
+      // Extraction des documents sous forme de liste de Map
+      List<Map<String, dynamic>> taxes = querySnapshot.docs.map((doc) {
+        return {
+          'id': doc.id, // Utiliser l'ID Firestore comme ID
+          'type': doc['type'],
+          'name': doc['name'],
+          'amount': doc['amount'],
+        };
+      }).toList();
+
+      // Insertion ou mise à jour des données dans la table SQLite "taxes"
+      await dbHelper.insertOrUpdateTaxes(taxes);
+
+      print("Taxes synchronisées avec succès !");
+    } catch (error) {
+      print("Erreur lors de la synchronisation des taxes : $error");
+    }
+  }
+
   void _submitTaxForm() async {
     if (_selectedTaxType != null &&
         _taxNameController.text.isNotEmpty &&
@@ -53,8 +81,7 @@ class _SettingsPageState extends State<SettingsPage>
           'type': taxType,
           'name': taxName,
           'amount': taxAmount,
-          'createdAt':
-              FieldValue.serverTimestamp(),
+          'createdAt': FieldValue.serverTimestamp(),
         });
 
         print("Taxe ajoutée :");
@@ -85,36 +112,37 @@ class _SettingsPageState extends State<SettingsPage>
     }
   }
 
-  void _submitZoneForm() async {  
-  if (_zoneNameController.text.isNotEmpty) {  
-    String zoneName = _zoneNameController.text;  
+  void _submitZoneForm() async {
+    if (_zoneNameController.text.isNotEmpty) {
+      String zoneName = _zoneNameController.text;
 
-    // Envoi des données à Firebase  
-    try {  
-      await FirebaseFirestore.instance.collection('zones').add({  
-        'name': zoneName,  
-        'createdAt': FieldValue.serverTimestamp(), // Optionnel: pour le timestamp  
-      });  
+      // Envoi des données à Firebase
+      try {
+        await FirebaseFirestore.instance.collection('zones').add({
+          'name': zoneName,
+          'createdAt':
+              FieldValue.serverTimestamp(), // Optionnel: pour le timestamp
+        });
 
-      print("Zone ajoutée : $zoneName");  
+        print("Zone ajoutée : $zoneName");
 
-      ScaffoldMessenger.of(context).showSnackBar(  
-        const SnackBar(content: Text("Zone ajoutée avec succès !")),  
-      );  
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Zone ajoutée avec succès !")),
+        );
 
-      _zoneNameController.clear();  
-    } catch (e) {  
-      print("Erreur lors de l'ajout de la zone : $e");  
-      ScaffoldMessenger.of(context).showSnackBar(  
-        const SnackBar(content: Text("Erreur lors de l'ajout de la zone.")),  
-      );  
-    }  
-  } else {  
-    ScaffoldMessenger.of(context).showSnackBar(  
-      const SnackBar(content: Text("Veuillez entrer le nom de la zone !")),  
-    );  
-  }  
-}
+        _zoneNameController.clear();
+      } catch (e) {
+        print("Erreur lors de l'ajout de la zone : $e");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Erreur lors de l'ajout de la zone.")),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Veuillez entrer le nom de la zone !")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -141,6 +169,19 @@ class _SettingsPageState extends State<SettingsPage>
             child: SingleChildScrollView(
               child: Column(
                 children: [
+                  Row(
+                    children: [
+                      IconButton(
+                          onPressed: () async {
+                            await fetchAndSyncTaxes();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Taxes synchronisées !')),
+                            );
+                          },
+                          icon: const Icon(Icons.arrow_circle_down))
+                    ],
+                  ),
                   // Card pour ajouter une taxe
                   Card(
                     elevation: 4,
