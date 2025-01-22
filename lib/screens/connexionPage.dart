@@ -120,6 +120,7 @@ class _ConnexionPageState extends State<ConnexionPage> {
       String surname = userData['surname'];
       String zone = userData['zone'];
       String role = userData['role'];
+      String numTeleAdmin = userData['numTeleAdmin'];
 
       // Stocke les informations dans SharedPreferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -128,6 +129,7 @@ class _ConnexionPageState extends State<ConnexionPage> {
       await prefs.setString('surname', surname);
       await prefs.setString('zone', zone);
       await prefs.setString('role', role);
+      await prefs.setString('numTeleAdmin', numTeleAdmin);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Connexion réussie !')),

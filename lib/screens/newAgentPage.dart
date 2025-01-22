@@ -1,6 +1,7 @@
 import 'package:basileapp/screens/agentsPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NewAgentPage extends StatefulWidget {
   const NewAgentPage({super.key});
@@ -18,6 +19,11 @@ class _NewAgentPageState extends State<NewAgentPage> {
   String? _selectedZone;
   String? _selectedRole;
 
+  String? agentID;
+  String? numTeleAdmin;
+  String? agentName;
+  String? agentSurname;
+
   // Liste des zones d'activité
   final List<String> _zones = [];
 
@@ -28,6 +34,26 @@ class _NewAgentPageState extends State<NewAgentPage> {
   void initState() {
     super.initState();
     _loadZones();
+    loadUserData();
+  }
+
+  Future<void> loadUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? id = prefs.getString('id');
+    String? name = prefs.getString('name');
+    String? surname = prefs.getString('surname');
+    String? numTeleAdmin = prefs.getString('adminNum');
+
+    if (id != null) {
+      setState(() {
+        agentID = id;
+        agentName = name;
+        agentSurname = surname;
+        numTeleAdmin = numTeleAdmin;
+      });
+    } else {
+      print("Aucune donnée utilisateur trouvée.");
+    }
   }
 
   @override
@@ -74,6 +100,7 @@ class _NewAgentPageState extends State<NewAgentPage> {
         "password": _defaultPassword,
         "zone": _selectedZone,
         "role": _selectedRole,
+        "numTeleAdmin": numTeleAdmin,
       };
 
       try {

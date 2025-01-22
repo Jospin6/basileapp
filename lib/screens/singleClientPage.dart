@@ -4,6 +4,7 @@ import 'package:basileapp/screens/editClientPage.dart';
 import 'package:basileapp/screens/paiementsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_sms/flutter_sms.dart';
 
 class SingleClientPage extends StatefulWidget {
   final dynamic clientID;
@@ -19,12 +20,16 @@ class _SingleClientPageState extends State<SingleClientPage> {
   final TextEditingController _amountController = TextEditingController();
   Map<String, dynamic>? _selectedTaxType;
   DatabaseHelper dbHelper = DatabaseHelper();
+  String? agentName;
+  String? agentSurname;
+  String? agentZone;
 
   // Liste des types de taxes
   List<Map<String, dynamic>> _taxTypes = [];
   String taxe = "Journalier";
   double amountTaxe = 0;
   String? agentID;
+  String? numTeleAdmin;
 
   @override
   void initState() {
@@ -42,10 +47,18 @@ class _SingleClientPageState extends State<SingleClientPage> {
   Future<void> loadUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? id = prefs.getString('id');
+    String? name = prefs.getString('name');
+    String? surname = prefs.getString('surname');
+    String? zone = prefs.getString('zone');
+    String? numTeleAdmin = prefs.getString('adminNum');
 
     if (id != null) {
       setState(() {
         agentID = id;
+        agentName = name;
+        agentSurname = surname;
+        agentZone = zone;
+        numTeleAdmin = numTeleAdmin;
       });
     } else {
       print("Aucune donnée utilisateur trouvée.");
@@ -157,6 +170,7 @@ class _SingleClientPageState extends State<SingleClientPage> {
                     "amount_recu": double.parse(_amountController.text),
                     "created_at": DateTime.now().toIso8601String()
                   };
+
                   print("Taxe ajoutée : $taxData");
 
                   // Insérer les données dans la base de données
@@ -164,9 +178,24 @@ class _SingleClientPageState extends State<SingleClientPage> {
                   await dbHelper.insertPayment(taxData);
                   await dbHelper.insertPaymentHistory(taxHistData);
 
+                  // Préparer les données pour le SMS
+                  String message =
+                      "L'agent $agentName $agentSurname vient d'enregistrer un paiement de ${taxHistData['amount_recu']} dans la zone de $agentZone à ${taxHistData['created_at']}.";
+                  String recipient = "$numTeleAdmin";
+
+                  // Envoyer le SMS
+                  try {
+                    await _sendSMS(message, [recipient]);
+                    print("SMS envoyé avec succès !");
+                  } catch (e) {
+                    print("Erreur lors de l'envoi du SMS : $e");
+                  }
+
                   // Nettoyer les champs
-                  _selectedTaxType = null;
-                  _amountController.clear();
+                  setState(() {
+                    _selectedTaxType = null;
+                    _amountController.clear();
+                  });
 
                   Navigator.pop(context); // Fermer le popup
                 }
@@ -408,5 +437,15 @@ class _SingleClientPageState extends State<SingleClientPage> {
         Text(title, style: const TextStyle(fontSize: 14, color: Colors.white)),
       ],
     );
+  }
+
+  Future<void> _sendSMS(String message, List<String> recipients) async {
+    try {
+      String result = await sendSMS(
+          message: message, recipients: recipients, sendDirect: true);
+      print(result);
+    } catch (e) {
+      print("Erreur lors de l'envoi du SMS : $e");
+    }
   }
 }
