@@ -1,5 +1,6 @@
 import 'package:basileapp/db/database_helper.dart';
 import 'package:basileapp/outils/paiement.dart';
+import 'package:basileapp/screens/editClientPage.dart';
 import 'package:basileapp/screens/paiementsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -59,7 +60,7 @@ class _SingleClientPageState extends State<SingleClientPage> {
   Future<double> getTotPaiedClient(int id) async {
     double totalPaid = await dbHelper.getTotalPaidByClient(id);
     return totalPaid;
-  } 
+  }
 
   void fetchTaxes() async {
     DatabaseHelper dbHelper = DatabaseHelper();
@@ -236,7 +237,21 @@ class _SingleClientPageState extends State<SingleClientPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Détails du client")),
+      appBar: AppBar(
+        title: const Text("Détails du client"),
+        actions: [
+          IconButton(
+              onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditClientPage(
+                        clientId: widget.clientID,
+                      ),
+                    ),
+                  ),
+              icon: const Icon(Icons.edit))
+        ],
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -293,9 +308,11 @@ class _SingleClientPageState extends State<SingleClientPage> {
                 child: Column(
                   children: [
                     Row(
-                      children: [ 
-                        _dashboardTile("Total Paiement", "${getTotPaiedClient(widget.clientID)}"),
-                        _dashboardTile("Total Dette", "${fetchClientDebts(widget.clientID)}"),
+                      children: [
+                        _dashboardTile("Total Paiement",
+                            "${getTotPaiedClient(widget.clientID)}"),
+                        _dashboardTile("Total Dette",
+                            "${fetchClientDebts(widget.clientID)}"),
                       ],
                     ),
                   ],
@@ -341,14 +358,14 @@ class _SingleClientPageState extends State<SingleClientPage> {
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return const Center(child: Text("Aucun paiement trouvé"));
                   }
-              
+
                   final payments = snapshot.data!;
-              
+
                   return ListView.builder(
                     itemCount: payments.length,
                     itemBuilder: (context, index) {
                       final payment = payments[index];
-              
+
                       return ListTile(
                         title: Text(
                           'Montant Reçu: ${payment.amountRecu} Taxe: ${payment.taxeName}',
@@ -361,8 +378,8 @@ class _SingleClientPageState extends State<SingleClientPage> {
                                 onPressed: () {
                                   _showUpdatePaymentDialog(context, payment);
                                 },
-                                icon:
-                                    const Icon(Icons.payment, color: Colors.red),
+                                icon: const Icon(Icons.payment,
+                                    color: Colors.red),
                               )
                             : const Icon(Icons.check, color: Colors.green),
                       );
