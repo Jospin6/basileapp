@@ -15,6 +15,7 @@ class _EditAgentPageState extends State<EditAgentPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _surnameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _numTeleAdminController = TextEditingController();
   String? _selectedZone;
   String? _selectedRole;
 
@@ -36,6 +37,7 @@ class _EditAgentPageState extends State<EditAgentPage> {
     _nameController.dispose();
     _surnameController.dispose();
     _phoneController.dispose();
+    _numTeleAdminController.dispose();
     super.dispose();
   }
 
@@ -92,6 +94,7 @@ class _EditAgentPageState extends State<EditAgentPage> {
         "phone": _phoneController.text,
         "zone": _selectedZone,
         "role": _selectedRole,
+        "numTeleAdmin": _numTeleAdminController.text,
       };
 
       try {
@@ -165,6 +168,27 @@ class _EditAgentPageState extends State<EditAgentPage> {
                 controller: _phoneController,
                 decoration: const InputDecoration(
                   labelText: "Numéro de téléphone",
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.phone,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Veuillez entrer le numéro de téléphone";
+                  }
+                  if (!RegExp(r'^\d+$').hasMatch(value)) {
+                    return "Veuillez entrer un numéro valide";
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 10),
+
+              if(_selectedRole == "Admin")
+              // Champ pour le numéro de téléphone admin
+              TextFormField(
+                controller: _numTeleAdminController,
+                decoration: const InputDecoration(
+                  labelText: "Numéro de téléphone Admin",
                   border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.phone,
