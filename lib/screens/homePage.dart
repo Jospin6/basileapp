@@ -66,11 +66,6 @@ class _HomepageState extends State<Homepage> {
     return totalDebt;
   }
 
-  Future<double> fetchClientDebts(int id) async {
-    double clientDebt = await dbHelper.getClientDebt(id);
-    return clientDebt;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,9 +73,9 @@ class _HomepageState extends State<Homepage> {
           title: const Text('Basile'),
           backgroundColor: Colors.blueAccent,
           leading: IconButton(
-            icon: const Icon(Icons.menu), // Icône pour ouvrir le Drawer
+            icon: const Icon(Icons.menu),
             onPressed: () {
-              Scaffold.of(context).openDrawer(); // Ouvre le Drawer
+              Scaffold.of(context).openDrawer();
             },
           ),
         ),
@@ -213,7 +208,13 @@ class _HomepageState extends State<Homepage> {
         ),
         body: Column(
           children: [
-            const Text("Agent name"),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("$agentName $agentSurname"),
+                Text("Rôle $agentRole"),
+              ],
+            ),
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(

@@ -51,6 +51,16 @@ class _SingleClientPageState extends State<SingleClientPage> {
     }
   }
 
+  Future<double> fetchClientDebts(int id) async {
+    double clientDebt = await dbHelper.getClientDebt(id);
+    return clientDebt;
+  }
+
+  Future<double> getTotPaiedClient(int id) async {
+    double totalPaid = await dbHelper.getTotalPaidByClient(id);
+    return totalPaid;
+  } 
+
   void fetchTaxes() async {
     DatabaseHelper dbHelper = DatabaseHelper();
     String taxesType = "Journalier"; // Remplacez par le type de taxe souhaité
@@ -278,18 +288,15 @@ class _SingleClientPageState extends State<SingleClientPage> {
               width: double.infinity,
               height: 150,
               margin: const EdgeInsets.all(10),
-              child: const Card(
+              child: Card(
                 elevation: 4,
                 child: Column(
                   children: [
                     Row(
-                      children: [],
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      children: [],
+                      children: [ 
+                        _dashboardTile("Total Paiement", "${getTotPaiedClient(widget.clientID)}"),
+                        _dashboardTile("Total Dette", "${fetchClientDebts(widget.clientID)}"),
+                      ],
                     ),
                   ],
                 ),
@@ -367,6 +374,22 @@ class _SingleClientPageState extends State<SingleClientPage> {
           ],
         ),
       ),
+    );
+  }
+
+  // Widget pour les tuiles du dashboard
+  Widget _dashboardTile(String title, dynamic value) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        value != null
+            ? Text(value,
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold))
+            : const Text(""),
+        const SizedBox(height: 8),
+        Text(title, style: const TextStyle(fontSize: 14, color: Colors.white)),
+      ],
     );
   }
 }
