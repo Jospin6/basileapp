@@ -85,6 +85,18 @@ class DatabaseHelper {
     );
   }
 
+  Future<int> getClientCount() async {
+    final db = await database;
+    try {
+      final List<Map<String, dynamic>> result =
+          await db.rawQuery('SELECT COUNT(*) AS count FROM clients');
+      return Sqflite.firstIntValue(result) ?? 0;
+    } catch (e) {
+      print('Erreur lors de la récupération du nombre de clients : $e');
+      return 0;
+    }
+  }
+
   // Fonction pour récupérer tous les clients
   Future<List<Map<String, dynamic>>> getAllClients() async {
     final db = await database;
@@ -121,6 +133,67 @@ class DatabaseHelper {
       where: 'id = ?',
       whereArgs: [id],
     );
+  }
+
+  Future<List<Map<String, dynamic>>> getLastTenPaymentsByClient(
+      int clientId) async {
+    final db = await database;
+    try {
+      // Requête pour récupérer les 10 derniers paiements d'un client
+      final result = await db.rawQuery('''
+      SELECT * 
+      FROM paiements_history 
+      WHERE id_client = ? 
+      ORDER BY created_at DESC 
+      LIMIT 10
+    ''', [clientId]);
+
+      return result;
+    } catch (e) {
+      print('Erreur lors de la récupération des 10 derniers paiements : $e');
+      return [];
+    }
+  }
+
+  Future<double> getTotalPaidByClient(int clientId) async {
+    final db = await database;
+    try {
+      // Exécuter la requête pour obtenir la somme des montants reçus pour un client
+      final result = await db.rawQuery('''
+      SELECT SUM(amount_recu) AS totalPaid 
+      FROM paiements 
+      WHERE id_client = ?
+    ''', [clientId]);
+
+      // Retourner la somme ou 0 si aucune donnée
+      return result[0]['totalPaid'] != null
+          ? (result[0]['totalPaid'] as double)
+          : 0.0;
+    } catch (e) {
+      print(
+          'Erreur lors de la récupération de la somme payée par le client : $e');
+      return 0.0;
+    }
+  }
+
+  Future<double> getClientDebt(int clientId) async {
+    final db = await database;
+    try {
+      // Exécuter la requête pour obtenir la somme des dettes du client
+      final result = await db.rawQuery('''
+      SELECT SUM(amount_tot - amount_recu) AS clientDebt 
+      FROM paiements 
+      WHERE id_client = ? AND amount_tot > amount_recu
+    ''', [clientId]);
+
+      // Retourner la somme ou 0 si aucune dette pour ce client
+      return result[0]['clientDebt'] != null
+          ? (result[0]['clientDebt'] as double)
+          : 0.0;
+    } catch (e) {
+      print('Erreur lors de la récupération de la dette du client : $e');
+      return 0.0;
+    }
   }
 
   // Fonction pour insérer une taxe
@@ -301,6 +374,26 @@ class DatabaseHelper {
     );
   }
 
+  Future<double> getTotalDebt() async {
+    final db = await database;
+    try {
+      // Exécuter la requête pour obtenir la somme des dettes
+      final result = await db.rawQuery('''
+      SELECT SUM(amount_tot - amount_recu) AS totalDebt 
+      FROM paiements 
+      WHERE amount_tot > amount_recu
+    ''');
+
+      // Retourner la somme ou 0 si aucune dette
+      return result[0]['totalDebt'] != null
+          ? (result[0]['totalDebt'] as double)
+          : 0.0;
+    } catch (e) {
+      print('Erreur lors de la récupération de la dette totale : $e');
+      return 0.0;
+    }
+  }
+
   // Fonction pour insérer un paiement historique
   Future<void> insertPaymentHistory(
       Map<String, dynamic> paymentHistoryData) async {
@@ -368,7 +461,32 @@ class DatabaseHelper {
     );
   }
 
-   Future<void> insertOrUpdateTaxes(List<Map<String, dynamic>> taxes) async {
+  Future<double> getDailyAmount() async {
+    final db = await database;
+    try {
+      // Obtenir la date du jour actuel (à minuit)
+      final today = DateTime.now();
+      final todayStart =
+          DateTime(today.year, today.month, today.day).toIso8601String();
+      final todayEnd = DateTime(today.year, today.month, today.day, 23, 59, 59)
+          .toIso8601String();
+
+      // Exécuter la requête SQL pour la somme
+      final result = await db.rawQuery('''
+      SELECT SUM(amount_recu) AS total 
+      FROM paiements_history 
+      WHERE created_at >= ? AND created_at <= ?
+    ''', [todayStart, todayEnd]);
+
+      // Retourner la somme ou 0 si aucune donnée
+      return result[0]['total'] != null ? (result[0]['total'] as double) : 0.0;
+    } catch (e) {
+      print('Erreur lors de la récupération de la somme journalière : $e');
+      return 0.0;
+    }
+  }
+
+  Future<void> insertOrUpdateTaxes(List<Map<String, dynamic>> taxes) async {
     final db = await database;
 
     for (var tax in taxes) {
