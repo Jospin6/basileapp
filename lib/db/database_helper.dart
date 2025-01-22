@@ -31,7 +31,7 @@ class DatabaseHelper {
             address TEXT,   
             phone TEXT,   
             zone TEXT,   
-            agent INTEGER,
+            agent TEXT,
             created_at TEXT,  
           )  
         ''');
@@ -101,6 +101,16 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> getAllClients() async {
     final db = await database;
     return await db.query('clients');
+  }
+
+  // Fonction pour récupérer un client
+  Future<List<Map<String, dynamic>>> getClient(int id) async {
+    final db = await database;
+    return await db.query(
+      'clients',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 
   // Fonction pour récupérer tous les clients d'une zone spécifique
