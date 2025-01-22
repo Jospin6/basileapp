@@ -275,6 +275,35 @@ class DatabaseHelper {
     });
   }
 
+  Future<List<Payment>> fetchLatestClientsPayments() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.rawQuery('''
+    SELECT p.id, p.id_client, p.id_taxe, p.id_agent,   
+           p.amount_tot, p.amount_recu, p.created_at,   
+           c.name AS client_name, t.name AS taxe_name  
+    FROM paiements p  
+    JOIN clients c ON p.id_client = c.id  
+    JOIN taxes t ON p.id_taxe = t.id   
+    ORDER BY p.created_at DESC  
+    LIMIT 10  
+  ''',);
+
+    return List.generate(maps.length, (i) {
+      return Payment(
+        id: maps[i]['id'],
+        idClient: maps[i]['id_client'],
+        idTaxe: maps[i]['id_taxe'],
+        idAgent: maps[i]['id_agent'],
+        amountTot: maps[i]['amount_tot'],
+        amountRecu: maps[i]['amount_recu'],
+        createdAt: maps[i]['created_at'],
+        clientName: maps[i]['client_name'],
+        taxeName: maps[i]['taxe_name'],
+      );
+    });
+  }
+
+
   Future<List<Payment>> fetchLatestPayments(int clientId) async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.rawQuery('''

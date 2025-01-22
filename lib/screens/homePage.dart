@@ -1,3 +1,5 @@
+import 'package:basileapp/db/database_helper.dart';
+import 'package:basileapp/outils/paiement.dart';
 import 'package:basileapp/screens/agentsPage.dart';
 import 'package:basileapp/screens/clientPage.dart';
 import 'package:basileapp/screens/connexionPage.dart';
@@ -14,6 +16,7 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
+  DatabaseHelper dbHelper = DatabaseHelper();
   String? agentID;
   String? agentName;
   String? agentSurname;
@@ -48,152 +51,249 @@ class _HomepageState extends State<Homepage> {
     loadUserData();
   }
 
+  Future<int> fetchClientCount() async {
+    int clientCount = await dbHelper.getClientCount();
+    return clientCount;
+  }
+
+  Future<double> fetchDailyAmount() async {
+    double dailyAmount = await dbHelper.getDailyAmount();
+    return dailyAmount;
+  }
+
+  Future<double> fetchDebts() async {
+    double totalDebt = await dbHelper.getTotalDebt();
+    return totalDebt;
+  }
+
+  Future<double> fetchClientDebts(int id) async {
+    double clientDebt = await dbHelper.getClientDebt(id);
+    return clientDebt;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Basile'),
-        backgroundColor: Colors.blueAccent,
-        leading: IconButton(
-          icon: const Icon(Icons.menu), // Icône pour ouvrir le Drawer
-          onPressed: () {
-            Scaffold.of(context).openDrawer(); // Ouvre le Drawer
-          },
+        appBar: AppBar(
+          title: const Text('Basile'),
+          backgroundColor: Colors.blueAccent,
+          leading: IconButton(
+            icon: const Icon(Icons.menu), // Icône pour ouvrir le Drawer
+            onPressed: () {
+              Scaffold.of(context).openDrawer(); // Ouvre le Drawer
+            },
+          ),
         ),
-      ),
-      drawer: Drawer(
-        child: Column(
-          children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blueAccent,
+        drawer: Drawer(
+          child: Column(
+            children: [
+              const DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Colors.blueAccent,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // CircleAvatar(
+                    //   radius: 40,
+                    //   backgroundImage: AssetImage('assets/profile_picture.png'), // Ajoutez une image dans vos assets
+                    // ),
+                    SizedBox(height: 10),
+                    Text(
+                      'John Doe',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      'johndoe@example.com',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              ListTile(
+                leading: const Icon(Icons.home),
+                title: const Text('Accueil'),
+                onTap: () {
+                  Navigator.pop(context); // Ferme la Drawer
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const Homepage(),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.person),
+                title: const Text('Clients'),
+                onTap: () {
+                  Navigator.pop(context); // Ferme la Drawer
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ClientPage(),
+                    ),
+                  );
+                },
+              ),
+              agentRole == "Admin"
+                  ? ListTile(
+                      leading: const Icon(Icons.person),
+                      title: const Text('Agents'),
+                      onTap: () {
+                        Navigator.pop(context); // Ferme la Drawer
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AgentsPage(),
+                          ),
+                        );
+                      },
+                    )
+                  : const Text(""),
+              agentRole == "Admin"
+                  ? ListTile(
+                      leading: const Icon(Icons.settings),
+                      title: const Text('Settings'),
+                      onTap: () {
+                        Navigator.pop(context); // Ferme la Drawer
+                        // Ajoutez une action ici
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SettingsPage(),
+                          ),
+                        );
+                      },
+                    )
+                  : const Text(""),
+              const Spacer(),
+              const Divider(),
+              ListTile(
+                leading: const Icon(Icons.person),
+                title: const Text('Mon compte'),
+                onTap: () {
+                  Navigator.pop(context); // Ferme la Drawer
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SingleAgentPage(
+                        agentID: agentID,
+                      ),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.logout, color: Colors.redAccent),
+                title: const Text(
+                  'Logout',
+                  style: TextStyle(color: Colors.redAccent),
+                ),
+                onTap: () {
+                  Navigator.pop(context); // Ferme la Drawer
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ConnexionPage(),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+        body: Column(
+          children: [
+            const Text("Agent name"),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10), color: Colors.white),
+              width: double.infinity,
+              height: 300,
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // CircleAvatar(
-                  //   radius: 40,
-                  //   backgroundImage: AssetImage('assets/profile_picture.png'), // Ajoutez une image dans vos assets
-                  // ),
-                  SizedBox(height: 10),
-                  Text(
-                    'John Doe',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _dashboardTile("Total Clients", "${fetchClientCount()}"),
+                      _dashboardTile("$agentZone", null),
+                    ],
                   ),
-                  Text(
-                    'johndoe@example.com',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                    ),
-                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _dashboardTile(
+                          "Recolte du jour", "${fetchDailyAmount()}Fc"),
+                      _dashboardTile("Dette Totale", "${fetchDebts()}Fc"),
+                    ],
+                  )
                 ],
               ),
             ),
-            ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text('Accueil'),
-              onTap: () {
-                Navigator.pop(context); // Ferme la Drawer
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const Homepage(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text('Clients'),
-              onTap: () {
-                Navigator.pop(context); // Ferme la Drawer
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ClientPage(),
-                  ),
-                );
-              },
-            ),
-            agentRole == "Admin"
-                ? ListTile(
-                    leading: const Icon(Icons.person),
-                    title: const Text('Agents'),
-                    onTap: () {
-                      Navigator.pop(context); // Ferme la Drawer
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AgentsPage(),
-                        ),
+            Expanded(
+              child: FutureBuilder<List<Payment>>(
+                future: dbHelper.fetchLatestClientsPayments(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Erreur: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text('Aucun paiement trouvé.'));
+                  }
+
+                  final payments = snapshot.data!;
+
+                  return ListView.builder(
+                    itemCount: payments.length,
+                    itemBuilder: (context, index) {
+                      final payment = payments[index];
+
+                      return ListTile(
+                        title: Text(
+                            'Montant Reçu: ${payment.amountRecu} | Taxe: ${payment.taxeName}'),
+                        subtitle: Text(
+                            'Client: ${payment.clientName}\nDate: ${payment.createdAt}'),
+                        trailing: payment.amountRecu < payment.amountTot
+                            ? const Icon(Icons.warning,
+                                color: Colors
+                                    .red) // Icône d'avertissement si paiement incomplet
+                            : const Icon(Icons.check,
+                                color: Colors
+                                    .green), // Icône de validation si paiement complet
                       );
                     },
-                  )
-                : const Text(""),
-            agentRole == "Admin"
-                ? ListTile(
-                    leading: const Icon(Icons.settings),
-                    title: const Text('Settings'),
-                    onTap: () {
-                      Navigator.pop(context); // Ferme la Drawer
-                      // Ajoutez une action ici
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const SettingsPage(),
-                        ),
-                      );
-                    },
-                  )
-                : const Text(""),
-            const Spacer(),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text('Mon compte'),
-              onTap: () {
-                Navigator.pop(context); // Ferme la Drawer
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SingleAgentPage(
-                      agentID: agentID,
-                    ),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.logout, color: Colors.redAccent),
-              title: const Text(
-                'Logout',
-                style: TextStyle(color: Colors.redAccent),
+                  );
+                },
               ),
-              onTap: () {
-                Navigator.pop(context); // Ferme la Drawer
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ConnexionPage(),
-                  ),
-                );
-              },
             ),
           ],
-        ),
-      ),
-      body: const Center(
-        child: Text(
-          'Welcome to the Homepage!',
-          style: TextStyle(fontSize: 20),
-        ),
-      ),
+        ));
+  }
+
+  // Widget pour les tuiles du dashboard
+  Widget _dashboardTile(String title, dynamic value) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        value != null
+            ? Text(value,
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold))
+            : const Text(""),
+        const SizedBox(height: 8),
+        Text(title, style: const TextStyle(fontSize: 14, color: Colors.white)),
+      ],
     );
   }
 }
