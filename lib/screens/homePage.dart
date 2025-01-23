@@ -2,7 +2,6 @@ import 'package:basileapp/db/database_helper.dart';
 import 'package:basileapp/outils/paiement.dart';
 import 'package:basileapp/screens/agentsPage.dart';
 import 'package:basileapp/screens/clientPage.dart';
-import 'package:basileapp/screens/connexionPage.dart';
 import 'package:basileapp/screens/settingsPage.dart';
 import 'package:basileapp/screens/singleAgentPage.dart';
 import 'package:flutter/material.dart';
@@ -82,8 +81,8 @@ class _HomepageState extends State<Homepage> {
         drawer: Drawer(
           child: Column(
             children: [
-              const DrawerHeader(
-                decoration: BoxDecoration(
+              DrawerHeader(
+                decoration: const BoxDecoration(
                   color: Colors.blueAccent,
                 ),
                 child: Column(
@@ -94,18 +93,18 @@ class _HomepageState extends State<Homepage> {
                     //   radius: 40,
                     //   backgroundImage: AssetImage('assets/profile_picture.png'), // Ajoutez une image dans vos assets
                     // ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Text(
-                      'John Doe',
-                      style: TextStyle(
+                      '$agentName $agentSurname',
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
-                      'johndoe@example.com',
-                      style: TextStyle(
+                      'Role $agentRole',
+                      style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 14,
                       ),
@@ -126,50 +125,49 @@ class _HomepageState extends State<Homepage> {
                   );
                 },
               ),
-              ListTile(
-                leading: const Icon(Icons.person),
-                title: const Text('Clients'),
-                onTap: () {
-                  Navigator.pop(context); // Ferme la Drawer
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ClientPage(),
-                    ),
-                  );
-                },
-              ),
-              agentRole == "Admin"
-                  ? ListTile(
-                      leading: const Icon(Icons.person),
-                      title: const Text('Agents'),
-                      onTap: () {
-                        Navigator.pop(context); // Ferme la Drawer
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const AgentsPage(),
-                          ),
-                        );
-                      },
-                    )
-                  : const Text(""),
-              agentRole == "Admin"
-                  ? ListTile(
-                      leading: const Icon(Icons.settings),
-                      title: const Text('Settings'),
-                      onTap: () {
-                        Navigator.pop(context); // Ferme la Drawer
-                        // Ajoutez une action ici
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SettingsPage(),
-                          ),
-                        );
-                      },
-                    )
-                  : const Text(""),
+              if (agentRole != "Admin")
+                ListTile(
+                  leading: const Icon(Icons.person),
+                  title: const Text('Clients'),
+                  onTap: () {
+                    Navigator.pop(context); // Ferme la Drawer
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ClientPage(),
+                      ),
+                    );
+                  },
+                ),
+              if (agentRole == "Admin")
+                ListTile(
+                  leading: const Icon(Icons.person),
+                  title: const Text('Agents'),
+                  onTap: () {
+                    Navigator.pop(context); // Ferme la Drawer
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AgentsPage(),
+                      ),
+                    );
+                  },
+                ),
+              if (agentRole == "Admin")
+                ListTile(
+                  leading: const Icon(Icons.settings),
+                  title: const Text('Settings'),
+                  onTap: () {
+                    Navigator.pop(context); // Ferme la Drawer
+                    // Ajoutez une action ici
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SettingsPage(),
+                      ),
+                    );
+                  },
+                ),
               const Spacer(),
               const Divider(),
               ListTile(
@@ -183,22 +181,6 @@ class _HomepageState extends State<Homepage> {
                       builder: (context) => SingleAgentPage(
                         agentID: agentID,
                       ),
-                    ),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.logout, color: Colors.redAccent),
-                title: const Text(
-                  'Logout',
-                  style: TextStyle(color: Colors.redAccent),
-                ),
-                onTap: () {
-                  Navigator.pop(context); // Ferme la Drawer
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ConnexionPage(),
                     ),
                   );
                 },

@@ -1,3 +1,4 @@
+import 'package:basileapp/screens/zonesPage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -76,6 +77,17 @@ class _AdminDashboardState extends State<AdminDashboard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ElevatedButton(onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ZonesPage(),
+                    ),
+                  ), child: const Text("Zones"))
+                ],
+              ),
               // Display stats
               Card(
                 elevation: 4,
