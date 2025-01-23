@@ -1,4 +1,6 @@
+import 'package:basileapp/outils/sharedData.dart';
 import 'package:basileapp/screens/agentsPage.dart';
+import 'package:basileapp/services/firebaseServices.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,6 +17,8 @@ class _NewAgentPageState extends State<NewAgentPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _surnameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  late SharedData sharedData;
+  FirebaseServices firebaseServices = FirebaseServices();
   String _defaultPassword = "12345678"; // Mot de passe par défaut
   String? _selectedZone;
   String? _selectedRole;
@@ -39,21 +43,12 @@ class _NewAgentPageState extends State<NewAgentPage> {
 
   Future<void> loadUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? id = prefs.getString('id');
-    String? name = prefs.getString('name');
-    String? surname = prefs.getString('surname');
-    String? numTeleAdmin = prefs.getString('adminNum');
-
-    if (id != null) {
-      setState(() {
-        agentID = id;
-        agentName = name;
-        agentSurname = surname;
-        numTeleAdmin = numTeleAdmin;
-      });
-    } else {
-      print("Aucune donnée utilisateur trouvée.");
-    }
+    sharedData = SharedData(prefs: prefs);
+    setState(() {
+      agentID = sharedData.getAgentId().toString();
+      agentName = sharedData.getAgentName().toString();
+      agentSurname = sharedData.getAgentSurname().toString();
+    });
   }
 
   @override
@@ -64,31 +59,10 @@ class _NewAgentPageState extends State<NewAgentPage> {
     super.dispose();
   }
 
-  Future<void> fetchZones(List<String> zonesList) async {
-    try {
-      FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-      // Récupérer toutes les zones de la collection 'zones'
-      QuerySnapshot querySnapshot = await firestore.collection('zones').get();
-
-      // Extraire les noms des zones et les ajouter à la liste
-      List<String> zones = querySnapshot.docs.map((doc) {
-        return doc['name'] as String; // Assurez-vous que le champ 'name' existe
-      }).toList();
-
-      // Mettre à jour la liste passée en paramètre
-      zonesList.clear();
-      zonesList.addAll(zones);
-
-      print("Zones récupérées avec succès : $zonesList");
-    } catch (e) {
-      print("Erreur lors de la récupération des zones : $e");
-    }
-  }
-
   Future<void> _loadZones() async {
-    await fetchZones(_zones);
-    setState(() {}); // Mettre à jour l'interface utilisateur après le chargement
+    await firebaseServices.fetchZones(_zones);
+    setState(
+        () {}); // Mettre à jour l'interface utilisateur après le chargement
   }
 
   void _submitForm() async {

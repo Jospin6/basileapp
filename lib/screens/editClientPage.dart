@@ -62,29 +62,30 @@ class _EditClientPageState extends State<EditClientPage> {
   }
 
   Future<void> _loadClientData() async {
-  DatabaseHelper dbHelper = DatabaseHelper();
-  try {
-    // Récupère la liste des clients correspondant à l'ID
-    final clients = await dbHelper.getClient(widget.clientId);
+    DatabaseHelper dbHelper = DatabaseHelper();
+    try {
+      // Récupère la liste des clients correspondant à l'ID
+      final clients = await dbHelper.getClient(widget.clientId);
 
-    // Vérifie si la liste n'est pas vide, puis utilise le premier élément
-    if (clients.isNotEmpty) {
-      final client = clients.first;
+      // Vérifie si la liste n'est pas vide, puis utilise le premier élément
+      if (clients.isNotEmpty) {
+        final client = clients.first;
 
-      setState(() {
-        _nameController.text = client['name'] as String? ?? '';
-        _postNameController.text = client['postName'] as String? ?? '';
-        _commerceController.text = client['commerce'] as String? ?? '';
-        _addressController.text = client['address'] as String? ?? '';
-        _phoneController.text = client['phone'] as String? ?? '';
-        _selectedZone = client['zone'] as String? ?? '';
-        _agentId = client['agent'].toString(); // Convertit à une chaîne si nécessaire
-      });
+        setState(() {
+          _nameController.text = client['name'] as String? ?? '';
+          _postNameController.text = client['postName'] as String? ?? '';
+          _commerceController.text = client['commerce'] as String? ?? '';
+          _addressController.text = client['address'] as String? ?? '';
+          _phoneController.text = client['phone'] as String? ?? '';
+          _selectedZone = client['zone'] as String? ?? '';
+          _agentId = client['agent']
+              .toString(); // Convertit à une chaîne si nécessaire
+        });
+      }
+    } catch (e) {
+      print("Erreur lors du chargement des données du client : $e");
     }
-  } catch (e) {
-    print("Erreur lors du chargement des données du client : $e");
   }
-}
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
@@ -111,7 +112,8 @@ class _EditClientPageState extends State<EditClientPage> {
       } catch (e) {
         print("Erreur lors de la modification du client : $e");
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Erreur lors de la modification du client.")),
+          const SnackBar(
+              content: Text("Erreur lors de la modification du client.")),
         );
       }
     }

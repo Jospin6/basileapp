@@ -183,80 +183,80 @@ class _EditAgentPageState extends State<EditAgentPage> {
               ),
               const SizedBox(height: 10),
 
-              if(_selectedRole == "Admin")
-              // Champ pour le numéro de téléphone admin
-              TextFormField(
-                controller: _numTeleAdminController,
-                decoration: const InputDecoration(
-                  labelText: "Numéro de téléphone Admin",
-                  border: OutlineInputBorder(),
+              if (_selectedRole == "Admin")
+                // Champ pour le numéro de téléphone admin
+                TextFormField(
+                  controller: _numTeleAdminController,
+                  decoration: const InputDecoration(
+                    labelText: "Numéro de téléphone Admin",
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.phone,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Veuillez entrer le numéro de téléphone";
+                    }
+                    if (!RegExp(r'^\d+$').hasMatch(value)) {
+                      return "Veuillez entrer un numéro valide";
+                    }
+                    return null;
+                  },
                 ),
-                keyboardType: TextInputType.phone,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Veuillez entrer le numéro de téléphone";
-                  }
-                  if (!RegExp(r'^\d+$').hasMatch(value)) {
-                    return "Veuillez entrer un numéro valide";
-                  }
-                  return null;
-                },
-              ),
               const SizedBox(height: 10),
 
-              if(_selectedRole == "Admin")
-              // Menu déroulant pour la zone d'activité
-              DropdownButtonFormField<String>(
-                value: _selectedZone,
-                items: _zones.map((String zone) {
-                  return DropdownMenuItem<String>(
-                    value: zone,
-                    child: Text(zone),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedZone = newValue;
-                  });
-                },
-                decoration: const InputDecoration(
-                  labelText: "Zone d'activité",
-                  border: OutlineInputBorder(),
+              if (_selectedRole == "Admin")
+                // Menu déroulant pour la zone d'activité
+                DropdownButtonFormField<String>(
+                  value: _selectedZone,
+                  items: _zones.map((String zone) {
+                    return DropdownMenuItem<String>(
+                      value: zone,
+                      child: Text(zone),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedZone = newValue;
+                    });
+                  },
+                  decoration: const InputDecoration(
+                    labelText: "Zone d'activité",
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Veuillez sélectionner une zone d'activité";
+                    }
+                    return null;
+                  },
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Veuillez sélectionner une zone d'activité";
-                  }
-                  return null;
-                },
-              ),
               const SizedBox(height: 10),
-              if(_selectedRole == "Admin")
-                  // Menu déroulant pour le rôle
-                  DropdownButtonFormField<String>(
-                      value: _selectedRole,
-                      items: _roles.map((String role) {
-                        return DropdownMenuItem<String>(
-                          value: role,
-                          child: Text(role),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          _selectedRole = newValue;
-                        });
-                      },
-                      decoration: const InputDecoration(
-                        labelText: "Rôle de l'agent",
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Veuillez sélectionner un rôle";
-                        }
-                        return null;
-                      },
-                    ),
+              if (_selectedRole == "Admin")
+                // Menu déroulant pour le rôle
+                DropdownButtonFormField<String>(
+                  value: _selectedRole,
+                  items: _roles.map((String role) {
+                    return DropdownMenuItem<String>(
+                      value: role,
+                      child: Text(role),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedRole = newValue;
+                    });
+                  },
+                  decoration: const InputDecoration(
+                    labelText: "Rôle de l'agent",
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Veuillez sélectionner un rôle";
+                    }
+                    return null;
+                  },
+                ),
               const SizedBox(height: 20),
 
               // Bouton pour soumettre les modifications

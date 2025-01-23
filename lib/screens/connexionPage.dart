@@ -1,6 +1,7 @@
+import 'package:basileapp/outils/sharedData.dart';
 import 'package:basileapp/screens/homePage.dart';
+import 'package:basileapp/services/firebaseServices.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ConnexionPage extends StatefulWidget {
@@ -14,6 +15,8 @@ class _ConnexionPageState extends State<ConnexionPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  FirebaseServices firebaseServices = FirebaseServices();
+  late SharedData sharedData;
 
   @override
   Widget build(BuildContext context) {
@@ -101,15 +104,11 @@ class _ConnexionPageState extends State<ConnexionPage> {
   Future<void> _loginUser() async {
     final phone = _phoneController.text.trim();
     final password = _passwordController.text.trim();
+    final result = await firebaseServices.login(phone, password);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    sharedData = SharedData(prefs: prefs);
 
     // Vérifiez si l'utilisateur existe dans Firestore
-    final QuerySnapshot result = await FirebaseFirestore.instance
-        .collection('users')
-        .where('phone', isEqualTo: phone)
-        .where('password',
-            isEqualTo:
-                password) // Assurez-vous que le mot de passe est stocké correctement
-        .get();
 
     if (result.docs.isNotEmpty) {
       // Connexion réussie
@@ -122,14 +121,8 @@ class _ConnexionPageState extends State<ConnexionPage> {
       String role = userData['role'];
       String numTeleAdmin = userData['numTeleAdmin'];
 
-      // Stocke les informations dans SharedPreferences
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('id', id);
-      await prefs.setString('name', name);
-      await prefs.setString('surname', surname);
-      await prefs.setString('zone', zone);
-      await prefs.setString('role', role);
-      await prefs.setString('numTeleAdmin', numTeleAdmin);
+      sharedData.setSharedPreferences(
+          id, name, surname, zone, role, numTeleAdmin);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Connexion réussie !')),

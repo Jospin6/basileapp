@@ -15,7 +15,9 @@ class _ZonesPageState extends State<ZonesPage> {
   Future<List<Map<String, dynamic>>> _fetchZones() async {
     try {
       final QuerySnapshot snapshot = await _firestore.collection('zones').get();
-      return snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+      return snapshot.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
     } catch (e) {
       print("Erreur lors de la récupération des zones : $e");
       return [];
@@ -34,7 +36,8 @@ class _ZonesPageState extends State<ZonesPage> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return const Center(child: Text("Erreur lors du chargement des zones"));
+            return const Center(
+                child: Text("Erreur lors du chargement des zones"));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text("Aucune zone trouvée"));
           } else {
@@ -51,7 +54,8 @@ class _ZonesPageState extends State<ZonesPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => SingleZonePage(zoneName: zoneName),
+                        builder: (context) =>
+                            SingleZonePage(zoneName: zoneName),
                       ),
                     );
                   },

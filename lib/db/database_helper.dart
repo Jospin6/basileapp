@@ -476,7 +476,7 @@ class DatabaseHelper {
 
   // Fonction pour récupérer tout l'historique des paiements d'un agent
   Future<List<Map<String, dynamic>>> getPaymentHistoryByAgent(
-      int agentId) async {
+      String agentId) async {
     final db = await database;
     return await db.rawQuery('''
       SELECT paiements_history.*, clients.name AS client_name, taxes.amount AS tax_amount, agents.name AS agent_name  

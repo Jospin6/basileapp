@@ -1,5 +1,6 @@
 import 'package:basileapp/db/database_helper.dart';
 import 'package:basileapp/outils/pdfPrinter.dart';
+import 'package:basileapp/outils/sharedData.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,11 +13,11 @@ class PaiementHistoryPage extends StatefulWidget {
 }
 
 class _PaiementHistoryPageState extends State<PaiementHistoryPage> {
-
   final pdfPrinter = PdfPrinter();
   String? agentName;
   String? agentSurname;
   String? agentZone;
+  late SharedData sharedData;
 
   @override
   void initState() {
@@ -26,22 +27,14 @@ class _PaiementHistoryPageState extends State<PaiementHistoryPage> {
 
   Future<void> loadUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? id = prefs.getString('id');
-    String? name = prefs.getString('name');
-    String? surname = prefs.getString('surname');
-    String? zone = prefs.getString('zone');
-
-    if (id != null) {
-      setState(() {
-        agentName = name;
-        agentSurname = surname;
-        agentZone = zone;
-      });
-    } else {
-      print("Aucune donnée utilisateur trouvée.");
-    }
+    sharedData = SharedData(prefs: prefs);
+    setState(() {
+      agentName = sharedData.getAgentName().toString();
+      agentSurname = sharedData.getAgentSurname().toString();
+      agentZone = sharedData.getAgentZone().toString();
+    });
   }
-  
+
   @override
   Widget build(BuildContext context) {
     DatabaseHelper dbHelper = DatabaseHelper();
@@ -77,41 +70,40 @@ class _PaiementHistoryPageState extends State<PaiementHistoryPage> {
                   ],
                 ),
                 isThreeLine: true,
-                trailing:
-                    IconButton(
-                      onPressed: () async {
-                        // Récupérer les données du client et taxe
-                  List<Map<String, dynamic>> clientData =
-                      await dbHelper.getClient(int.parse(widget.clientID));
-                  List<Map<String, dynamic>> taxeData =
-                      await dbHelper.getTax(payment['id_taxe']);
-                  if (clientData.isEmpty || taxeData.isEmpty) {
-                    print("Erreur : aucun client ou taxe trouvé avec cet ID.");
-                    return;
-                  }
-                  final client = clientData.first;
-                  final taxe = taxeData.first;
+                trailing: IconButton(
+                    onPressed: () async {
+                      // Récupérer les données du client et taxe
+                      List<Map<String, dynamic>> clientData =
+                          await dbHelper.getClient(int.parse(widget.clientID));
+                      List<Map<String, dynamic>> taxeData =
+                          await dbHelper.getTax(payment['id_taxe']);
+                      if (clientData.isEmpty || taxeData.isEmpty) {
+                        print(
+                            "Erreur : aucun client ou taxe trouvé avec cet ID.");
+                        return;
+                      }
+                      final client = clientData.first;
+                      final taxe = taxeData.first;
 
-                  // Impression reçu
-                  try {
-                    await pdfPrinter.printReceipt(
-                      taxData: {
-                        "created_at": DateTime.now().toIso8601String(),
-                        "client_name": client['name'].toString(),
-                        "type_taxe": taxe['type'].toString(),
-                        "taxe_name": taxe['name'].toString(),
-                        "amount_recu": payment['amount_recu'].toString(),
-                      },
-                      agentName: agentName!,
-                      agentSurname: agentSurname!,
-                      agentZone: agentZone!,
-                    );
-                  } catch (e) {
-                    print("Erreur lors de l'envoi du SMS : $e");
-                  }
-
-                      }, 
-                      icon: const Icon(Icons.print)),
+                      // Impression reçu
+                      try {
+                        await pdfPrinter.printReceipt(
+                          taxData: {
+                            "created_at": DateTime.now().toIso8601String(),
+                            "client_name": client['name'].toString(),
+                            "type_taxe": taxe['type'].toString(),
+                            "taxe_name": taxe['name'].toString(),
+                            "amount_recu": payment['amount_recu'].toString(),
+                          },
+                          agentName: agentName!,
+                          agentSurname: agentSurname!,
+                          agentZone: agentZone!,
+                        );
+                      } catch (e) {
+                        print("Erreur lors de l'envoi du SMS : $e");
+                      }
+                    },
+                    icon: const Icon(Icons.print)),
               );
             },
           );

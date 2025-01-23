@@ -1,10 +1,9 @@
 import 'package:basileapp/db/database_helper.dart';
 import 'package:basileapp/outils/paiement.dart';
-import 'package:basileapp/screens/agentsPage.dart';
-import 'package:basileapp/screens/clientPage.dart';
-import 'package:basileapp/screens/settingsPage.dart';
-import 'package:basileapp/screens/singleAgentPage.dart';
+import 'package:basileapp/outils/sharedData.dart';
 import 'package:basileapp/widgets/adminDashboard.dart';
+import 'package:basileapp/widgets/drawerWidget.dart';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,6 +16,7 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   DatabaseHelper dbHelper = DatabaseHelper();
+  late SharedData sharedData;
   String? agentID;
   String? agentName;
   String? agentSurname;
@@ -25,24 +25,15 @@ class _HomepageState extends State<Homepage> {
 
   Future<void> loadUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? id = prefs.getString('id');
-    String? name = prefs.getString('name');
-    String? surname = prefs.getString('surname');
-    String? zone = prefs.getString('zone');
-    String? role = prefs.getString('role');
+    sharedData = SharedData(prefs: prefs);
 
-    if (id != null) {
-      print("ID: $id, Name: $name, Surname: $surname, Zone: $zone");
-      setState(() {
-        agentID = id;
-        agentName = name;
-        agentSurname = surname;
-        agentZone = zone;
-        agentRole = role;
-      });
-    } else {
-      print("Aucune donnée utilisateur trouvée.");
-    }
+    setState(() {
+      agentID = sharedData.getAgentId().toString();
+      agentName = sharedData.getAgentName().toString();
+      agentSurname = sharedData.getAgentSurname().toString();
+      agentZone = sharedData.getAgentZone().toString();
+      agentRole = sharedData.getAgentRole().toString();
+    });
   }
 
   @override
@@ -79,116 +70,12 @@ class _HomepageState extends State<Homepage> {
             },
           ),
         ),
-        drawer: Drawer(
-          child: Column(
-            children: [
-              DrawerHeader(
-                decoration: const BoxDecoration(
-                  color: Colors.blueAccent,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const CircleAvatar(
-                      radius: 40,
-                      backgroundImage: AssetImage('assets/images/basile.jpg'),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      '$agentName $agentSurname',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      'Role $agentRole',
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              ListTile(
-                leading: const Icon(Icons.home),
-                title: const Text('Accueil'),
-                onTap: () {
-                  Navigator.pop(context); // Ferme la Drawer
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const Homepage(),
-                    ),
-                  );
-                },
-              ),
-              if (agentRole != "Admin")
-                ListTile(
-                  leading: const Icon(Icons.person),
-                  title: const Text('Clients'),
-                  onTap: () {
-                    Navigator.pop(context); // Ferme la Drawer
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ClientPage(),
-                      ),
-                    );
-                  },
-                ),
-              if (agentRole == "Admin")
-                ListTile(
-                  leading: const Icon(Icons.person),
-                  title: const Text('Agents'),
-                  onTap: () {
-                    Navigator.pop(context); // Ferme la Drawer
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const AgentsPage(),
-                      ),
-                    );
-                  },
-                ),
-              if (agentRole == "Admin")
-                ListTile(
-                  leading: const Icon(Icons.settings),
-                  title: const Text('Settings'),
-                  onTap: () {
-                    Navigator.pop(context); // Ferme la Drawer
-                    // Ajoutez une action ici
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SettingsPage(),
-                      ),
-                    );
-                  },
-                ),
-              const Spacer(),
-              const Divider(),
-              ListTile(
-                leading: const Icon(Icons.person),
-                title: const Text('Mon compte'),
-                onTap: () {
-                  Navigator.pop(context); // Ferme la Drawer
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SingleAgentPage(
-                        agentID: agentID,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
+        drawer: DrawerWidget(
+            agentID: agentID!,
+            agentName: agentName!,
+            agentSurname: agentSurname!,
+            agentZone: agentZone!,
+            agentRole: agentRole!),
         body: agentRole == "Admin"
             ? const AdminDashboard()
             : Column(

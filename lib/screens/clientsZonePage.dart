@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:basileapp/services/firebaseServices.dart';
 import 'package:flutter/material.dart';
 
 class ClientsZonePage extends StatefulWidget {
@@ -10,24 +10,8 @@ class ClientsZonePage extends StatefulWidget {
 }
 
 class _ClientsZonePageState extends State<ClientsZonePage> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  Future<List<Map<String, dynamic>>> _fetchClientsByZone() async {
-    try {
-      final querySnapshot = await _firestore
-          .collection('clients')
-          .where('zone', isEqualTo: widget.zoneName)
-          .get();
-
-      return querySnapshot.docs
-          .map((doc) => {'id': doc.id, ...doc.data() as Map<String, dynamic>})
-          .toList();
-    } catch (e) {
-      print("Erreur lors de la récupération des clients : $e");
-      return [];
-    }
-  }
-
+  FirebaseServices firebaseServices = FirebaseServices();
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,7 +19,7 @@ class _ClientsZonePageState extends State<ClientsZonePage> {
         title: Text("Clients de la zone : ${widget.zoneName}"),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: _fetchClientsByZone(),
+        future: firebaseServices.fetchClientsByZone(widget.zoneName),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

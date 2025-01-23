@@ -13,53 +13,52 @@ class PaiementsPage extends StatefulWidget {
 
 class _PaiementsPageState extends State<PaiementsPage> {
   DatabaseHelper dbHelper = DatabaseHelper();
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Basile'),
-        backgroundColor: Colors.blueAccent,
-        leading: IconButton(
-          icon: const Icon(Icons.history), 
-          onPressed: () {
-            Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const PaiementHistoryPage(),
-                  ),
-                );
-          },
+        appBar: AppBar(
+          title: const Text('Basile'),
+          backgroundColor: Colors.blueAccent,
+          leading: IconButton(
+            icon: const Icon(Icons.history),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PaiementHistoryPage(),
+                ),
+              );
+            },
+          ),
         ),
-      ),
-      body:  FutureBuilder<List<Payment>>(  
-      future: dbHelper.fetchClientPaiements(widget.clientID),  
-      builder: (context, snapshot) {  
-        if (snapshot.connectionState == ConnectionState.waiting) {  
-          return const Center(child: CircularProgressIndicator());  
-        } else if (snapshot.hasError) {  
-          return Center(child: Text('Erreur: ${snapshot.error}'));  
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {  
-          return const Center(child: Text('Aucun paiement trouvé.'));  
-        }  
+        body: FutureBuilder<List<Payment>>(
+          future: dbHelper.fetchClientPaiements(widget.clientID),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Erreur: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(child: Text('Aucun paiement trouvé.'));
+            }
 
-        final payments = snapshot.data!;  
+            final payments = snapshot.data!;
 
-        return ListView.builder(  
-          itemCount: payments.length,  
-          itemBuilder: (context, index) {  
-            final payment = payments[index];  
-            return ListTile(  
-              title: Text('Montant Reçu: ${payment.amountRecu}'),  
-              subtitle: Text(  
-                'Client: ${payment.clientName}, Taxe: ${payment.taxeName}, Date: ${payment.createdAt}',  
-              ),  
-              trailing: Text('Total: ${payment.amountTot}'),  
-            );  
-          },  
-        );  
-      },  
-    )
-    ); 
+            return ListView.builder(
+              itemCount: payments.length,
+              itemBuilder: (context, index) {
+                final payment = payments[index];
+                return ListTile(
+                  title: Text('Montant Reçu: ${payment.amountRecu}'),
+                  subtitle: Text(
+                    'Client: ${payment.clientName}, Taxe: ${payment.taxeName}, Date: ${payment.createdAt}',
+                  ),
+                  trailing: Text('Total: ${payment.amountTot}'),
+                );
+              },
+            );
+          },
+        ));
   }
 }

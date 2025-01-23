@@ -89,7 +89,8 @@ class _SingleZonePageState extends State<SingleZonePage> {
         children: [
           Row(
             children: [
-              ElevatedButton(onPressed: (){}, child: const Text("Clients de la zone"))
+              ElevatedButton(
+                  onPressed: () {}, child: const Text("Clients de la zone"))
             ],
           ),
           Padding(
@@ -112,7 +113,7 @@ class _SingleZonePageState extends State<SingleZonePage> {
                   final usersCount = data[1] as int;
                   final paymentsSummary = data[2] as Map<String, double>;
                   final agents = data[3] as List<Map<String, dynamic>>;
-          
+
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -120,9 +121,11 @@ class _SingleZonePageState extends State<SingleZonePage> {
                           style: const TextStyle(fontSize: 18)),
                       Text("Nombre d'utilisateurs : $usersCount",
                           style: const TextStyle(fontSize: 18)),
-                      Text("Montant total payé : ${paymentsSummary['totalPaid']} \$",
+                      Text(
+                          "Montant total payé : ${paymentsSummary['totalPaid']} \$",
                           style: const TextStyle(fontSize: 18)),
-                      Text("Total des dettes : ${paymentsSummary['totalDebt']} \$",
+                      Text(
+                          "Total des dettes : ${paymentsSummary['totalDebt']} \$",
                           style: const TextStyle(fontSize: 18)),
                       const SizedBox(height: 20),
                       const Text("Agents :", style: TextStyle(fontSize: 20)),
@@ -133,7 +136,7 @@ class _SingleZonePageState extends State<SingleZonePage> {
                             final agent = agents[index];
                             final agentName = agent['name'] ?? "Nom inconnu";
                             final agentID = agent['id'] ?? "";
-          
+
                             return ListTile(
                               title: Text(agentName),
                               onTap: () {

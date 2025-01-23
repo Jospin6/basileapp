@@ -1,6 +1,7 @@
 import 'package:basileapp/db/database_helper.dart';
 import 'package:basileapp/outils/paiement.dart';
 import 'package:basileapp/outils/pdfPrinter.dart';
+import 'package:basileapp/outils/sharedData.dart';
 import 'package:basileapp/screens/editClientPage.dart';
 import 'package:basileapp/screens/paiementsPage.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +35,8 @@ class _SingleClientPageState extends State<SingleClientPage> {
   String? agentID;
   String? numTeleAdmin;
 
+  late SharedData sharedData;
+
   @override
   void initState() {
     super.initState();
@@ -49,23 +52,15 @@ class _SingleClientPageState extends State<SingleClientPage> {
 
   Future<void> loadUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? id = prefs.getString('id');
-    String? name = prefs.getString('name');
-    String? surname = prefs.getString('surname');
-    String? zone = prefs.getString('zone');
-    String? numTeleAdmin = prefs.getString('adminNum');
+    sharedData = SharedData(prefs: prefs);
 
-    if (id != null) {
-      setState(() {
-        agentID = id;
-        agentName = name;
-        agentSurname = surname;
-        agentZone = zone;
-        numTeleAdmin = numTeleAdmin;
-      });
-    } else {
-      print("Aucune donnée utilisateur trouvée.");
-    }
+    setState(() {
+      agentID = sharedData.getAgentId().toString();
+      numTeleAdmin = sharedData.getNumTeleAdmin().toString();
+      agentName = sharedData.getAgentName().toString();
+      agentSurname = sharedData.getAgentSurname().toString();
+      agentZone = sharedData.getAgentZone().toString();
+    });
   }
 
   Future<double> fetchClientDebts(int id) async {
@@ -93,7 +88,7 @@ class _SingleClientPageState extends State<SingleClientPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Ajouter une taxe"),
+          title: const Text("Payer une taxe"),
           content: Form(
             key: _formKey,
             child: Column(
