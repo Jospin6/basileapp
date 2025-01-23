@@ -194,7 +194,7 @@ class _SingleClientPageState extends State<SingleClientPage> {
                     print("Erreur lors de l'envoi du SMS : $e");
                   }
 
-                  // Récupérer les données du client
+                  // Récupérer les données du client et taxe
                   List<Map<String, dynamic>> clientData =
                       await dbHelper.getClient(int.parse(widget.clientID));
                   List<Map<String, dynamic>> taxeData =
