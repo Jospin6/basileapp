@@ -41,14 +41,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
   String? agentID;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
 
   @override
   Future<void> initState() async {
@@ -134,12 +127,17 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            const Text("CHEFFERIE DE BASILE"),
+            Container(
+              width: double.infinity,
+              height: 300,
+              margin: const EdgeInsets.all(10),
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/basile.jpg'),
+                  fit: BoxFit.fill, 
+                ),
+              ),
             ),
             ElevatedButton(
                 onPressed: () {
@@ -155,11 +153,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: const Text("Commencer"))
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }

@@ -4,6 +4,7 @@ import 'package:basileapp/screens/agentsPage.dart';
 import 'package:basileapp/screens/clientPage.dart';
 import 'package:basileapp/screens/settingsPage.dart';
 import 'package:basileapp/screens/singleAgentPage.dart';
+import 'package:basileapp/widgets/adminDashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -89,10 +90,10 @@ class _HomepageState extends State<Homepage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // CircleAvatar(
-                    //   radius: 40,
-                    //   backgroundImage: AssetImage('assets/profile_picture.png'), // Ajoutez une image dans vos assets
-                    // ),
+                    const CircleAvatar(
+                      radius: 40,
+                      backgroundImage: AssetImage('assets/images/basile.jpg'),
+                    ),
                     const SizedBox(height: 10),
                     Text(
                       '$agentName $agentSurname',
@@ -188,80 +189,89 @@ class _HomepageState extends State<Homepage> {
             ],
           ),
         ),
-        body: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("$agentName $agentSurname"),
-                Text("Rôle $agentRole"),
-              ],
-            ),
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10), color: Colors.white),
-              width: double.infinity,
-              height: 300,
-              child: Column(
+        body: agentRole == "Admin"
+            ? const AdminDashboard()
+            : Column(
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _dashboardTile("Total Clients", "${fetchClientCount()}"),
-                      _dashboardTile("$agentZone", null),
+                      Text("$agentName $agentSurname"),
+                      Text("Rôle $agentRole"),
                     ],
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _dashboardTile(
-                          "Recolte du jour", "${fetchDailyAmount()}Fc"),
-                      _dashboardTile("Dette Totale", "${fetchDebts()}Fc"),
-                    ],
-                  )
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.white),
+                    width: double.infinity,
+                    height: 300,
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _dashboardTile(
+                                "Total Clients", "${fetchClientCount()}"),
+                            _dashboardTile("$agentZone", null),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _dashboardTile(
+                                "Recolte du jour", "${fetchDailyAmount()}Fc"),
+                            _dashboardTile("Dette Totale", "${fetchDebts()}Fc"),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: FutureBuilder<List<Payment>>(
+                      future: dbHelper.fetchLatestClientsPayments(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else if (snapshot.hasError) {
+                          return Center(
+                              child: Text('Erreur: ${snapshot.error}'));
+                        } else if (!snapshot.hasData ||
+                            snapshot.data!.isEmpty) {
+                          return const Center(
+                              child: Text('Aucun paiement trouvé.'));
+                        }
+
+                        final payments = snapshot.data!;
+
+                        return ListView.builder(
+                          itemCount: payments.length,
+                          itemBuilder: (context, index) {
+                            final payment = payments[index];
+
+                            return ListTile(
+                              title: Text(
+                                  'Montant Reçu: ${payment.amountRecu} | Taxe: ${payment.taxeName}'),
+                              subtitle: Text(
+                                  'Client: ${payment.clientName}\nDate: ${payment.createdAt}'),
+                              trailing: payment.amountRecu < payment.amountTot
+                                  ? const Icon(Icons.warning,
+                                      color: Colors
+                                          .red) // Icône d'avertissement si paiement incomplet
+                                  : const Icon(Icons.check,
+                                      color: Colors
+                                          .green), // Icône de validation si paiement complet
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
                 ],
-              ),
-            ),
-            Expanded(
-              child: FutureBuilder<List<Payment>>(
-                future: dbHelper.fetchLatestClientsPayments(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Erreur: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text('Aucun paiement trouvé.'));
-                  }
-
-                  final payments = snapshot.data!;
-
-                  return ListView.builder(
-                    itemCount: payments.length,
-                    itemBuilder: (context, index) {
-                      final payment = payments[index];
-
-                      return ListTile(
-                        title: Text(
-                            'Montant Reçu: ${payment.amountRecu} | Taxe: ${payment.taxeName}'),
-                        subtitle: Text(
-                            'Client: ${payment.clientName}\nDate: ${payment.createdAt}'),
-                        trailing: payment.amountRecu < payment.amountTot
-                            ? const Icon(Icons.warning,
-                                color: Colors
-                                    .red) // Icône d'avertissement si paiement incomplet
-                            : const Icon(Icons.check,
-                                color: Colors
-                                    .green), // Icône de validation si paiement complet
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
-          ],
-        ));
+              ));
   }
 
   // Widget pour les tuiles du dashboard
