@@ -50,7 +50,7 @@ class _SettingsPageState extends State<SettingsPage>
       // Extraction des documents sous forme de liste de Map
       List<Map<String, dynamic>> taxes = querySnapshot.docs.map((doc) {
         return {
-          'id': doc.id, // Utiliser l'ID Firestore comme ID
+          'id_collection': doc.id,
           'type': doc['type'],
           'name': doc['name'],
           'amount': doc['amount'],

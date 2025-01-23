@@ -164,6 +164,7 @@ class _SingleClientPageState extends State<SingleClientPage> {
                     "id_agent": agentID,
                     "amount_tot": amountTaxe,
                     "amount_recu": double.parse(_amountController.text),
+                    "zone": agentZone,
                     "created_at": DateTime.now().toIso8601String()
                   };
                   final taxHistData = {
@@ -171,6 +172,7 @@ class _SingleClientPageState extends State<SingleClientPage> {
                     "id_taxe": _selectedTaxType,
                     "id_agent": agentID,
                     "amount_recu": double.parse(_amountController.text),
+                    "zone": agentZone,
                     "created_at": DateTime.now().toIso8601String()
                   };
 

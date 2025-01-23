@@ -38,7 +38,8 @@ class DatabaseHelper {
 
         await db.execute('''
           CREATE TABLE IF NOT EXISTS taxes (  
-            id TEXT,   
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id_collection TEXT,   
             type TEXT,   
             name TEXT,  
             amount REAL  
@@ -52,7 +53,8 @@ class DatabaseHelper {
             id_taxe INTEGER,  
             id_agent INTEGER,  
             amount_tot REAL,  
-            amount_recu REAL,  
+            amount_recu REAL,
+            zone TEXT,  
             created_at TEXT,  
             FOREIGN KEY (id_client) REFERENCES clients(id),  
             FOREIGN KEY (id_taxe) REFERENCES taxes(id)  
@@ -65,7 +67,8 @@ class DatabaseHelper {
             id_client INTEGER,  
             id_taxe INTEGER,  
             id_agent INTEGER,  
-            amount_recu REAL,  
+            amount_recu REAL, 
+            zone TEXT, 
             created_at TEXT,  
             FOREIGN KEY (id_client) REFERENCES clients(id),  
             FOREIGN KEY (id_taxe) REFERENCES taxes(id) 
