@@ -65,4 +65,31 @@ class SyncData {
       print("Erreur lors de la synchronisation : $error");
     }
   }
+
+  Future<void> fetchAndSyncTaxes() async {
+    try {
+      DatabaseHelper dbHelper = DatabaseHelper();
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      // Récupération des données depuis la collection Firestore "taxes"
+      QuerySnapshot querySnapshot = await firestore.collection('taxes').get();
+
+      // Extraction des documents sous forme de liste de Map
+      List<Map<String, dynamic>> taxes = querySnapshot.docs.map((doc) {
+        return {
+          'id_collection': doc.id,
+          'type': doc['type'],
+          'name': doc['name'],
+          'amount': doc['amount'],
+        };
+      }).toList();
+
+      // Insertion ou mise à jour des données dans la table SQLite "taxes"
+      await dbHelper.insertOrUpdateTaxes(taxes);
+
+      print("Taxes synchronisées avec succès !");
+    } catch (error) {
+      print("Erreur lors de la synchronisation des taxes : $error");
+    }
+  }
 }
