@@ -1,5 +1,6 @@
 import 'package:basileapp/db/database_helper.dart';
 import 'package:basileapp/outils/paiement.dart';
+import 'package:basileapp/outils/pdfPrinter.dart';
 import 'package:basileapp/screens/editClientPage.dart';
 import 'package:basileapp/screens/paiementsPage.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,8 @@ class _SingleClientPageState extends State<SingleClientPage> {
   String? agentName;
   String? agentSurname;
   String? agentZone;
+
+  final pdfPrinter = PdfPrinter();
 
   // Liste des types de taxes
   List<Map<String, dynamic>> _taxTypes = [];
@@ -187,6 +190,37 @@ class _SingleClientPageState extends State<SingleClientPage> {
                   try {
                     await _sendSMS(message, [recipient]);
                     print("SMS envoyé avec succès !");
+                  } catch (e) {
+                    print("Erreur lors de l'envoi du SMS : $e");
+                  }
+
+                  // Récupérer les données du client
+                  List<Map<String, dynamic>> clientData =
+                      await dbHelper.getClient(int.parse(widget.clientID));
+                  List<Map<String, dynamic>> taxeData =
+                      await dbHelper.getTax(_selectedTaxType!['id']);
+                  if (clientData.isEmpty || taxeData.isEmpty) {
+                    print("Erreur : aucun client ou taxe trouvé avec cet ID.");
+                    return;
+                  }
+                  final client = clientData.first;
+                  final taxe = taxeData.first;
+
+                  // Impression reçu
+                  try {
+                    await pdfPrinter.printReceipt(
+                      taxData: {
+                        "created_at": DateTime.now().toIso8601String(),
+                        "client_name": client['name'].toString(),
+                        "type_taxe": taxe['type'].toString(),
+                        "taxe_name": taxe['name'].toString(),
+                        "amount_tot": amountTaxe,
+                        "amount_recu": taxHistData['amount_recu'],
+                      },
+                      agentName: agentName!,
+                      agentSurname: agentSurname!,
+                      agentZone: agentZone!,
+                    );
                   } catch (e) {
                     print("Erreur lors de l'envoi du SMS : $e");
                   }

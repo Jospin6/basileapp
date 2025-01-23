@@ -38,7 +38,7 @@ class DatabaseHelper {
 
         await db.execute('''
           CREATE TABLE IF NOT EXISTS taxes (  
-            id INTEGER PRIMARY KEY,   
+            id TEXT,   
             type TEXT,   
             name TEXT,  
             amount REAL  
@@ -213,6 +213,15 @@ class DatabaseHelper {
       'taxes',
       taxData,
       conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> getTax(String id) async {
+    final db = await database;
+    return await db.query(
+      'taxes',
+      where: 'id = ?',
+      whereArgs: [id],
     );
   }
 
@@ -454,11 +463,10 @@ class DatabaseHelper {
       int clientId) async {
     final db = await database;
     return await db.rawQuery('''
-      SELECT paiements_history.*, clients.name AS client_name, taxes.amount AS tax_amount, agents.name AS agent_name  
+      SELECT paiements_history.*, clients.name AS client_name, taxes.amount AS tax_amount  
       FROM paiements_history  
       LEFT JOIN clients ON paiements_history.id_client = clients.id  
       LEFT JOIN taxes ON paiements_history.id_taxe = taxes.id  
-      LEFT JOIN agents ON paiements_history.id_agent = agents.id  
       WHERE paiements_history.id_client = ?  
     ''', [clientId]);
   }
