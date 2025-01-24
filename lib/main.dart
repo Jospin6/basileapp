@@ -44,14 +44,18 @@ class _MyHomePageState extends State<MyHomePage> {
   String? agentID;
 
   @override
-  Future<void> initState() async {
+  void initState() {
     super.initState();
     loadUserData();
+    checkInternetAndFetchData(); // Appel d'une méthode distincte.
+  }
 
-    // Vérifie la connexion et exécute la méthode si connecté
-    bool connected = await isConnectedToInternet();
-    if (connected) {
-      await fetchAndStoreUserData(agentID!);
+  void checkInternetAndFetchData() async {
+    bool connected = await isConnectedToInternet(); // Attente du Future ici.
+    if (connected && agentID != null) {
+      fetchAndStoreUserData(agentID!);
+    } else {
+      print("Pas de connexion Internet ou agentID est null.");
     }
   }
 
@@ -135,7 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
               decoration: const BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage('assets/images/basile.jpg'),
-                  fit: BoxFit.fill, 
+                  fit: BoxFit.fill,
                 ),
               ),
             ),

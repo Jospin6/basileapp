@@ -37,7 +37,7 @@ class _HomepageState extends State<Homepage> {
   }
 
   @override
-  initState() {
+  void initState() {
     super.initState();
     loadUserData();
   }

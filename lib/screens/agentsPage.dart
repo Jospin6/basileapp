@@ -14,7 +14,7 @@ class _AgentsPageState extends State<AgentsPage> {
   late Future<List<Map<String, dynamic>>> _agentsFuture;
 
   @override
-  initState() {
+  void initState() {
     super.initState();
     _agentsFuture = fetchAgents();
   }
