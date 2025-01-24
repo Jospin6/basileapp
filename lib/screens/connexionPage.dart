@@ -87,10 +87,11 @@ class _ConnexionPageState extends State<ConnexionPage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
+                    backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
                   ),
                   child: const Text(
                     'Se connecter',
-                    style: TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ),
               ],

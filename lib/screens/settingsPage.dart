@@ -34,9 +34,12 @@ class _SettingsPageState extends State<SettingsPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
         title: const Text("Paramètres"),
         bottom: TabBar(
           controller: _tabController,
+          labelColor: Colors.white,
+          indicatorColor: Colors.black,
           tabs: const [
             Tab(text: "Infos"),
             Tab(text: "Autres"),

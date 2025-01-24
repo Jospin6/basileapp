@@ -231,7 +231,18 @@ class _SingleClientPageState extends State<SingleClientPage> {
                   Navigator.pop(context); // Fermer le popup
                 }
               },
-              child: const Text("Enregistrer"),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 40.0, vertical: 12.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
+              ),
+              child: const Text(
+                "Enregistrer",
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         );
@@ -286,7 +297,10 @@ class _SingleClientPageState extends State<SingleClientPage> {
                   );
                 }
               },
-              child: const Text("Mettre à jour"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
+              ),
+              child: const Text("Mettre à jour", style: TextStyle(color: Colors.white),),
             ),
           ],
         );
@@ -298,7 +312,8 @@ class _SingleClientPageState extends State<SingleClientPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Détails du client"),
+        backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
+        title: const Text("Détails du client", style: TextStyle(color: Colors.white),),
         actions: [
           IconButton(
               onPressed: () => Navigator.push(
@@ -309,7 +324,7 @@ class _SingleClientPageState extends State<SingleClientPage> {
                       ),
                     ),
                   ),
-              icon: const Icon(Icons.edit))
+              icon: const Icon(Icons.edit, color: Colors.white,))
         ],
       ),
       body: SingleChildScrollView(

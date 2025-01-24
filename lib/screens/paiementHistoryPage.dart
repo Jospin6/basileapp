@@ -39,7 +39,10 @@ class _PaiementHistoryPageState extends State<PaiementHistoryPage> {
   Widget build(BuildContext context) {
     DatabaseHelper dbHelper = DatabaseHelper();
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
+        title: const Text("Historique de paiements"),
+      ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: dbHelper.getPaymentHistoryByClient(widget.clientID),
         builder: (context, snapshot) {

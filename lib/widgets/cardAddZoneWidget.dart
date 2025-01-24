@@ -77,7 +77,10 @@ class _CardAddZoneWidgetState extends State<CardAddZoneWidget> {
             // Bouton pour soumettre le formulaire de zone
             ElevatedButton(
               onPressed: _submitZoneForm,
-              child: const Text("Ajouter la zone"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
+              ),
+              child: const Text("Ajouter la zone", style: TextStyle(color: Colors.white),),
             ),
           ],
         ),

@@ -47,7 +47,8 @@ class _AgentsPageState extends State<AgentsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Liste des agents"),
+        backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
+        title: const Text("Liste des agents", style: TextStyle(color: Colors.white),),
         actions: [
           IconButton(
               onPressed: () {

@@ -52,6 +52,7 @@ class _SingleAgentPageState extends State<SingleAgentPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
         title: const Text("Agent Details"),
         bottom: TabBar(
           controller: _tabController,

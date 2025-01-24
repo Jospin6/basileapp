@@ -51,7 +51,10 @@ class _ClientPageState extends State<ClientPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Client Page")),
+      appBar: AppBar(
+        backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
+        title: const Text("Client Page", style: TextStyle(color: Colors.white),)
+        ),
       body: Column(
         children: [
           Row(
@@ -66,6 +69,9 @@ class _ClientPageState extends State<ClientPage> {
                     ),
                   );
                 },
+                style: TextButton.styleFrom(
+                  backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
+                ),
                 child: const Text("Add Client"),
               ),
               const SizedBox(

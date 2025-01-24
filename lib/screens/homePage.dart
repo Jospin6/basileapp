@@ -61,10 +61,10 @@ class _HomepageState extends State<Homepage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Basile'),
-          backgroundColor: Colors.blueAccent,
+          title: const Text('Basile', style: TextStyle(color: Colors.white),),
+          backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
           leading: IconButton(
-            icon: const Icon(Icons.menu),
+            icon: const Icon(Icons.menu, color: Colors.white,),
             onPressed: () {
               Scaffold.of(context).openDrawer();
             },

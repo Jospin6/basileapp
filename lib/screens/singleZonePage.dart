@@ -83,7 +83,8 @@ class _SingleZonePageState extends State<SingleZonePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Zone : ${widget.zoneName}"),
+        backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
+        title: Text("Zone : ${widget.zoneName}", style: const TextStyle(color: Colors.white),),
       ),
       body: Column(
         children: [

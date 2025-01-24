@@ -113,6 +113,7 @@ class _NewAgentPageState extends State<NewAgentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
         title: const Text("Ajouter un agent"),
       ),
       body: Padding(
@@ -230,7 +231,10 @@ class _NewAgentPageState extends State<NewAgentPage> {
               // Bouton pour soumettre le formulaire
               ElevatedButton(
                 onPressed: _submitForm,
-                child: const Text("Ajouter l'agent"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
+                ),
+                child: const Text("Ajouter l'agent", style: TextStyle(color: Colors.white),),
               ),
             ],
           ),

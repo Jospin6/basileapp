@@ -130,7 +130,13 @@ class _CardAddTaxWidgetState extends State<CardAddTaxWidget> {
             // Bouton pour soumettre le formulaire de taxe
             ElevatedButton(
               onPressed: _submitTaxForm,
-              child: const Text("Ajouter la taxe"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
+              ),
+              child: const Text(
+                "Ajouter la taxe",
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         ),

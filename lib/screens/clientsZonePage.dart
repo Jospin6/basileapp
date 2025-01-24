@@ -16,7 +16,8 @@ class _ClientsZonePageState extends State<ClientsZonePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Clients de la zone : ${widget.zoneName}"),
+        backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
+        title: Text("Clients de la zone : ${widget.zoneName}", style: const TextStyle(color: Colors.white),),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: firebaseServices.fetchClientsByZone(widget.zoneName),

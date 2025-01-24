@@ -123,6 +123,7 @@ class _EditClientPageState extends State<EditClientPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
         title: const Text("Modifier un Client"),
       ),
       body: Padding(
@@ -230,6 +231,9 @@ class _EditClientPageState extends State<EditClientPage> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _submitForm,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
+                  ),
                   child: const Text("Enregistrer les modifications"),
                 ),
               ],

@@ -123,6 +123,7 @@ class _EditAgentPageState extends State<EditAgentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
         title: const Text("Modifier un agent"),
       ),
       body: Padding(
@@ -262,7 +263,10 @@ class _EditAgentPageState extends State<EditAgentPage> {
               // Bouton pour soumettre les modifications
               ElevatedButton(
                 onPressed: _updateAgentData,
-                child: const Text("Mettre à jour"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
+                ),
+                child: const Text("Mettre à jour", style: TextStyle(color: Colors.white),),
               ),
             ],
           ),

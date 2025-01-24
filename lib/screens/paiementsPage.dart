@@ -19,9 +19,9 @@ class _PaiementsPageState extends State<PaiementsPage> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Basile'),
-          backgroundColor: Colors.blueAccent,
+          backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
           leading: IconButton(
-            icon: const Icon(Icons.history),
+            icon: const Icon(Icons.history, color: Colors.white,),
             onPressed: () {
               Navigator.push(
                 context,
