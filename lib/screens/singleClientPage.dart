@@ -6,7 +6,6 @@ import 'package:basileapp/screens/editClientPage.dart';
 import 'package:basileapp/screens/paiementsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_sms/flutter_sms.dart';
 
 class SingleClientPage extends StatefulWidget {
   final dynamic clientID;
@@ -179,17 +178,17 @@ class _SingleClientPageState extends State<SingleClientPage> {
                   await dbHelper.insertPaymentHistory(taxHistData);
 
                   // Préparer les données pour le SMS
-                  String message =
-                      "L'agent $agentName $agentSurname vient d'enregistrer un paiement de ${taxHistData['amount_recu']} dans la zone de $agentZone à ${taxHistData['created_at']}.";
-                  String recipient = "$numTeleAdmin";
+                  // String message =
+                  //     "L'agent $agentName $agentSurname vient d'enregistrer un paiement de ${taxHistData['amount_recu']} dans la zone de $agentZone à ${taxHistData['created_at']}.";
+                  // String recipient = "$numTeleAdmin";
 
                   // Envoyer le SMS
-                  try {
-                    await _sendSMS(message, [recipient]);
-                    print("SMS envoyé avec succès !");
-                  } catch (e) {
-                    print("Erreur lors de l'envoi du SMS : $e");
-                  }
+                  // try {
+                  //   await _sendSMS(message, [recipient]);
+                  //   print("SMS envoyé avec succès !");
+                  // } catch (e) {
+                  //   print("Erreur lors de l'envoi du SMS : $e");
+                  // }
 
                   // Récupérer les données du client et taxe
                   List<Map<String, dynamic>> clientData =
@@ -485,13 +484,13 @@ class _SingleClientPageState extends State<SingleClientPage> {
     );
   }
 
-  Future<void> _sendSMS(String message, List<String> recipients) async {
-    try {
-      String result = await sendSMS(
-          message: message, recipients: recipients, sendDirect: true);
-      print(result);
-    } catch (e) {
-      print("Erreur lors de l'envoi du SMS : $e");
-    }
-  }
+  // Future<void> _sendSMS(String message, List<String> recipients) async {
+  //   try {
+  //     String result = await sendSMS(
+  //         message: message, recipients: recipients, sendDirect: true);
+  //     print(result);
+  //   } catch (e) {
+  //     print("Erreur lors de l'envoi du SMS : $e");
+  //   }
+  // }
 }
