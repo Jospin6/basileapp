@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.example.basileapp"
-    compileSdk = 33
+    compileSdk = 34
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
