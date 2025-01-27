@@ -1,11 +1,10 @@
 import 'package:basileapp/db/database_helper.dart';
-import 'package:basileapp/outils/paiement.dart';
 import 'package:basileapp/outils/pdfPrinter.dart';
 import 'package:basileapp/outils/sharedData.dart';
 import 'package:basileapp/screens/editClientPage.dart';
+import 'package:basileapp/screens/newPaiementPage.dart';
 import 'package:basileapp/screens/paiementsPage.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SingleClientPage extends StatefulWidget {
   final dynamic clientID;
@@ -17,9 +16,6 @@ class SingleClientPage extends StatefulWidget {
 }
 
 class _SingleClientPageState extends State<SingleClientPage> {
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _amountController = TextEditingController();
-  Map<String, dynamic>? _selectedTaxType;
   DatabaseHelper dbHelper = DatabaseHelper();
   String? agentName;
   String? agentSurname;
@@ -27,31 +23,34 @@ class _SingleClientPageState extends State<SingleClientPage> {
 
   final pdfPrinter = PdfPrinter();
 
-  // Liste des types de taxes
-  List<Map<String, dynamic>> _taxTypes = [];
-  String taxe = "Journalier";
-  double amountTaxe = 0;
   String? agentID;
   String? numTeleAdmin;
 
   late SharedData sharedData;
+  // List<Map<String, dynamic>> _taxes = [];
 
   @override
   void initState() {
     super.initState();
-    fetchTaxes();
     loadUserData();
+    // _fetchTaxes();
   }
+
+  // Future<void> _fetchTaxes() async {
+  //   List<Map<String, dynamic>> taxes =
+  //       await dbHelper.getAllTaxes(); // Récupération des données
+  //   setState(() {
+  //     _taxes = taxes; // Mise à jour de l'état avec les taxes récupérées
+  //   });
+  // }
 
   @override
   void dispose() {
-    _amountController.dispose();
     super.dispose();
   }
 
   Future<void> loadUserData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    sharedData = SharedData(prefs: prefs);
+    sharedData = SharedData();
 
     setState(() {
       agentID = sharedData.getAgentId().toString();
@@ -72,184 +71,7 @@ class _SingleClientPageState extends State<SingleClientPage> {
     return totalPaid;
   }
 
-  void fetchTaxes() async {
-    DatabaseHelper dbHelper = DatabaseHelper();
-    String taxesType = "Journalier"; // Remplacez par le type de taxe souhaité
-    List<Map<String, dynamic>> taxes = await dbHelper.getTaxesByType(taxesType);
-
-    setState(() {
-      _taxTypes = taxes; // Met à jour l'état avec la liste des clients
-    }); // Affiche les taxes récupérées
-  }
-
-  void _openAddTaxDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Payer une taxe"),
-          content: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Menu déroulant pour le type de taxe
-                DropdownButtonFormField<Map<String, dynamic>>(
-                  value: _selectedTaxType,
-                  items: _taxTypes.map((taxType) {
-                    return DropdownMenuItem<Map<String, dynamic>>(
-                      value: taxType['id'],
-                      child: Text('${taxType['name']}'),
-                    );
-                  }).toList(),
-                  onChanged: (Map<String, dynamic>? newValue) {
-                    setState(() {
-                      _selectedTaxType = newValue;
-                      amountTaxe = newValue!['amount'];
-                    });
-                  },
-                  decoration: const InputDecoration(
-                    labelText: "Type de taxe",
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null) {
-                      return "Veuillez sélectionner un type de taxe";
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 10),
-                // Champ pour le montant
-                TextFormField(
-                  controller: _amountController,
-                  decoration: const InputDecoration(
-                    labelText: "Montant",
-                    border: OutlineInputBorder(),
-                  ),
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Veuillez entrer un montant";
-                    }
-                    if (double.tryParse(value) == null) {
-                      return "Veuillez entrer un montant valide";
-                    }
-                    return null;
-                  },
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context); // Fermer le popup
-              },
-              child: const Text("Annuler"),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                if (_formKey.currentState!.validate()) {
-                  // Traitement des données
-                  final taxData = {
-                    "id_client": widget.clientID,
-                    "id_taxe": _selectedTaxType,
-                    "id_agent": agentID,
-                    "amount_tot": amountTaxe,
-                    "amount_recu": double.parse(_amountController.text),
-                    "zone": agentZone,
-                    "created_at": DateTime.now().toIso8601String()
-                  };
-                  final taxHistData = {
-                    "id_client": widget.clientID,
-                    "id_taxe": _selectedTaxType,
-                    "id_agent": agentID,
-                    "amount_recu": double.parse(_amountController.text),
-                    "zone": agentZone,
-                    "created_at": DateTime.now().toIso8601String()
-                  };
-
-                  print("Taxe ajoutée : $taxData");
-
-                  // Insérer les données dans la base de données
-                  DatabaseHelper dbHelper = DatabaseHelper();
-                  await dbHelper.insertPayment(taxData);
-                  await dbHelper.insertPaymentHistory(taxHistData);
-
-                  // Préparer les données pour le SMS
-                  // String message =
-                  //     "L'agent $agentName $agentSurname vient d'enregistrer un paiement de ${taxHistData['amount_recu']} dans la zone de $agentZone à ${taxHistData['created_at']}.";
-                  // String recipient = "$numTeleAdmin";
-
-                  // Envoyer le SMS
-                  // try {
-                  //   await _sendSMS(message, [recipient]);
-                  //   print("SMS envoyé avec succès !");
-                  // } catch (e) {
-                  //   print("Erreur lors de l'envoi du SMS : $e");
-                  // }
-
-                  // Récupérer les données du client et taxe
-                  List<Map<String, dynamic>> clientData =
-                      await dbHelper.getClient(int.parse(widget.clientID));
-                  List<Map<String, dynamic>> taxeData =
-                      await dbHelper.getTax(_selectedTaxType!['id']);
-                  if (clientData.isEmpty || taxeData.isEmpty) {
-                    print("Erreur : aucun client ou taxe trouvé avec cet ID.");
-                    return;
-                  }
-                  final client = clientData.first;
-                  final taxe = taxeData.first;
-
-                  // Impression reçu
-                  try {
-                    await pdfPrinter.printReceipt(
-                      taxData: {
-                        "created_at": DateTime.now().toIso8601String(),
-                        "client_name": client['name'].toString(),
-                        "type_taxe": taxe['type'].toString(),
-                        "taxe_name": taxe['name'].toString(),
-                        "amount_tot": amountTaxe,
-                        "amount_recu": taxHistData['amount_recu'],
-                      },
-                      agentName: agentName!,
-                      agentSurname: agentSurname!,
-                      agentZone: agentZone!,
-                    );
-                  } catch (e) {
-                    print("Erreur lors de l'envoi du SMS : $e");
-                  }
-
-                  // Nettoyer les champs
-                  setState(() {
-                    _selectedTaxType = null;
-                    _amountController.clear();
-                  });
-
-                  Navigator.pop(context); // Fermer le popup
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 40.0, vertical: 12.0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
-              ),
-              child: const Text(
-                "Enregistrer",
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showUpdatePaymentDialog(BuildContext context, Payment payment) {
+  void _showUpdatePaymentDialog(BuildContext context, double amountRecu, int idTaxe) {
     final TextEditingController _updateAmountController =
         TextEditingController();
 
@@ -279,9 +101,9 @@ class _SingleClientPageState extends State<SingleClientPage> {
                     double.tryParse(_updateAmountController.text);
 
                 if (enteredAmount != null) {
-                  final newAmountRecu = payment.amountRecu + enteredAmount;
+                  final newAmountRecu = amountRecu + enteredAmount;
 
-                  await dbHelper.updatePayment(payment.id, {
+                  await dbHelper.updatePayment(idTaxe, {
                     "amount_recu": newAmountRecu,
                   });
 
@@ -299,7 +121,10 @@ class _SingleClientPageState extends State<SingleClientPage> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
               ),
-              child: const Text("Mettre à jour", style: TextStyle(color: Colors.white),),
+              child: const Text(
+                "Mettre à jour",
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         );
@@ -312,7 +137,10 @@ class _SingleClientPageState extends State<SingleClientPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
-        title: const Text("Détails du client", style: TextStyle(color: Colors.white),),
+        title: const Text(
+          "Détails du client",
+          style: TextStyle(color: Colors.white),
+        ),
         actions: [
           IconButton(
               onPressed: () => Navigator.push(
@@ -323,7 +151,10 @@ class _SingleClientPageState extends State<SingleClientPage> {
                       ),
                     ),
                   ),
-              icon: const Icon(Icons.edit, color: Colors.white,))
+              icon: const Icon(
+                Icons.edit,
+                color: Colors.white,
+              ))
         ],
       ),
       body: SingleChildScrollView(
@@ -333,39 +164,10 @@ class _SingleClientPageState extends State<SingleClientPage> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 InkWell(
-                  onTap: () {
-                    _openAddTaxDialog;
-                    setState(() {
-                      taxe = "Journalier";
-                    });
-                  },
+                  onTap: () => {showTaxesDialog(context)},
                   child: Container(
                     padding: const EdgeInsets.only(right: 10),
-                    child: const Text("Jour"),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    _openAddTaxDialog;
-                    setState(() {
-                      taxe = "Mensuel";
-                    });
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: const Text("Mois"),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    _openAddTaxDialog;
-                    setState(() {
-                      taxe = "Annuel";
-                    });
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: const Text("Année"),
+                    child: const Text("Payer taxe"),
                   ),
                 ),
               ],
@@ -377,16 +179,16 @@ class _SingleClientPageState extends State<SingleClientPage> {
               width: double.infinity,
               height: 150,
               margin: const EdgeInsets.all(10),
-              child: Card(
+              child: const Card(
                 elevation: 4,
                 child: Column(
                   children: [
                     Row(
                       children: [
-                        _dashboardTile("Total Paiement",
-                            "${getTotPaiedClient(widget.clientID)}"),
-                        _dashboardTile("Total Dette",
-                            "${fetchClientDebts(widget.clientID)}"),
+                        // _dashboardTile("Total Paiement",
+                        //     "${getTotPaiedClient(widget.clientID)}"),
+                        // _dashboardTile("Total Dette",
+                        //     "${fetchClientDebts(widget.clientID)}"),
                       ],
                     ),
                   ],
@@ -418,17 +220,40 @@ class _SingleClientPageState extends State<SingleClientPage> {
             const SizedBox(
               height: 10,
             ),
+            // Container(
+            //     width: MediaQuery.of(context).size.width,
+            //     height: MediaQuery.of(context).size.height,
+            //     padding: const EdgeInsets.only(left: 10, right: 10),
+            //     child: _taxes.isEmpty
+            //         ? Center(
+            //             child:
+            //                 CircularProgressIndicator()) // Affiche un indicateur de chargement pendant la récupération
+            //         : ListView.builder(
+            //             itemCount: _taxes.length,
+            //             itemBuilder: (context, index) {
+            //               final tax = _taxes[index];
+            //               return ListTile(
+            //                 title: Text(tax['name'] ??
+            //                     'Nom inconnu'), // Affiche le nom de la taxe
+            //                 subtitle: Text(
+            //                     'ID: ${tax['id']}'), // Montre l'ID de la taxe
+            //                 trailing: Text(
+            //                     '${tax['amount']} €'), // Montre le montant de la taxe
+            //               );
+            //             },
+            //           )),
+
             Container(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
               padding: const EdgeInsets.only(left: 10, right: 10),
-              child: FutureBuilder<List<Payment>>(
+              child: FutureBuilder<List<Map<String, dynamic>>>(
                 future: dbHelper.fetchLatestPayments(widget.clientID),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
-                    return Center(child: Text("Erreur: ${snapshot.error}"));
+                    return Center(child: Text("Erreur putain: ${snapshot.error}"));
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return const Center(child: Text("Aucun paiement trouvé"));
                   }
@@ -442,15 +267,15 @@ class _SingleClientPageState extends State<SingleClientPage> {
 
                       return ListTile(
                         title: Text(
-                          'Montant Reçu: ${payment.amountRecu} Taxe: ${payment.taxeName}',
+                          'Montant Reçu: ${payment['amount_recu']} Taxe: ${payment['taxe_name']}',
                         ),
                         subtitle: Text(
-                          'Client: ${payment.clientName}, Date: ${payment.createdAt}',
+                          'Client: ${payment['client_name']}, Date: ${payment['created_at']}',
                         ),
-                        trailing: payment.amountRecu < payment.amountTot
+                        trailing: payment['amount_recu'] < payment['amount_tot']
                             ? IconButton(
                                 onPressed: () {
-                                  _showUpdatePaymentDialog(context, payment);
+                                  _showUpdatePaymentDialog(context, payment['amount_recu'], payment['id']);
                                 },
                                 icon: const Icon(Icons.payment,
                                     color: Colors.red),
@@ -484,6 +309,96 @@ class _SingleClientPageState extends State<SingleClientPage> {
     );
   }
 
+  Future<void> showTaxesDialog(BuildContext context) async {
+    final taxes = await dbHelper.getAllTaxes(); // Récupère les taxes
+
+    // Regrouper les taxes par type avec ID, nom, typeTaxe et montant
+    Map<String, List<Map<String, dynamic>>> taxesByType = {};
+    for (var tax in taxes) {
+      String type = tax['type'] ?? ""; // Assurez-vous que 'type' n'est pas nul
+      String name = tax['name'] ?? ""; // Assurez-vous que 'name' n'est pas nul
+      int id = tax['id']; // ID de la taxe
+      double amount = tax['amount'] ?? 0.0; // Montant de la taxe
+
+      // Créez un mappage pour chaque taxe
+      Map<String, dynamic> taxInfo = {
+        'id': id,
+        'name': name,
+        'amount': amount,
+      };
+
+      // Ajoutez cette taxe à la liste correspondante dans le Map
+      if (!taxesByType.containsKey(type)) {
+        taxesByType[type] = [];
+      }
+      taxesByType[type]!.add(taxInfo); // Ajoute le mappage à la liste
+    }
+
+    // Créer une liste de Widgets pour le dialogue
+    List<Widget> taxWidgets = [];
+    taxesByType.forEach((type, taxList) {
+      taxWidgets.add(
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                type,
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+              ...taxList.map((taxInfo) {
+                return ListTile(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NewPaiementPage(
+                        clientID: widget.clientID,
+                        typeTaxe: type,
+                        nameTaxe: taxInfo['name'],
+                        idTaxe: taxInfo['id'],
+                        montantTaxe: taxInfo['amount'],
+                      ),
+                    ),
+                  ),
+                  title: Text(
+                    '${taxInfo['name']}',
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                );
+              }),
+            ],
+          ),
+        ),
+      );
+    });
+
+    // Affichage du dialogue
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Liste des Taxes'),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: taxWidgets,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Fermer le dialogue
+              },
+              child: const Text('Fermer'),
+            ),
+          ],
+        );
+      },
+    );
+  }
   // Future<void> _sendSMS(String message, List<String> recipients) async {
   //   try {
   //     String result = await sendSMS(

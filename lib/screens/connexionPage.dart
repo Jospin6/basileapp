@@ -2,7 +2,6 @@ import 'package:basileapp/outils/sharedData.dart';
 import 'package:basileapp/screens/homePage.dart';
 import 'package:basileapp/services/firebaseServices.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ConnexionPage extends StatefulWidget {
   const ConnexionPage({super.key});
@@ -106,8 +105,7 @@ class _ConnexionPageState extends State<ConnexionPage> {
     final phone = _phoneController.text.trim();
     final password = _passwordController.text.trim();
     final result = await firebaseServices.login(phone, password);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    sharedData = SharedData(prefs: prefs);
+    sharedData = SharedData();
 
     // Vérifiez si l'utilisateur existe dans Firestore
 
@@ -120,10 +118,14 @@ class _ConnexionPageState extends State<ConnexionPage> {
       String surname = userData['surname'];
       String zone = userData['zone'];
       String role = userData['role'];
-      String numTeleAdmin = userData['numTeleAdmin'];
+      String numTeleAdmin = userData['numTeleAdmin'] ?? "0976774112";
 
-      sharedData.setSharedPreferences(
-          id, name, surname, zone, role, numTeleAdmin);
+      sharedData.setId(id);
+      sharedData.setName(name);
+      sharedData.setSurename(surname);
+      sharedData.setZone(zone);
+      sharedData.setRole(role);
+      sharedData.setNumTeleAdmin(numTeleAdmin);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Connexion réussie !')),

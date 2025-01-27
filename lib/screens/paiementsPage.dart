@@ -1,5 +1,4 @@
 import 'package:basileapp/db/database_helper.dart';
-import 'package:basileapp/outils/paiement.dart';
 import 'package:basileapp/screens/paiementHistoryPage.dart';
 import 'package:flutter/material.dart';
 
@@ -18,21 +17,26 @@ class _PaiementsPageState extends State<PaiementsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Basile'),
+          title: const Text('Basile', style: TextStyle(color: Colors.white),),
           backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
-          leading: IconButton(
-            icon: const Icon(Icons.history, color: Colors.white,),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const PaiementHistoryPage(),
-                ),
-              );
-            },
-          ),
+          actions: [
+            IconButton(
+              icon: const Icon(
+                Icons.history,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const PaiementHistoryPage(),
+                  ),
+                );
+              },
+            ),
+          ],
         ),
-        body: FutureBuilder<List<Payment>>(
+        body: FutureBuilder<List<Map<String, dynamic>>>(
           future: dbHelper.fetchClientPaiements(widget.clientID),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -50,11 +54,11 @@ class _PaiementsPageState extends State<PaiementsPage> {
               itemBuilder: (context, index) {
                 final payment = payments[index];
                 return ListTile(
-                  title: Text('Montant Reçu: ${payment.amountRecu}'),
+                  title: Text('Montant Reçu: ${payment['amount_recu']}'),
                   subtitle: Text(
-                    'Client: ${payment.clientName}, Taxe: ${payment.taxeName}, Date: ${payment.createdAt}',
+                    'Client: ${payment['client_name']}, Taxe: ${payment['tax_name']}, Date: ${payment['created_at']}',
                   ),
-                  trailing: Text('Total: ${payment.amountTot}'),
+                  trailing: Text('Total: ${payment['amount_tot']}'),
                 );
               },
             );

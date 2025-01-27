@@ -3,7 +3,6 @@ import 'package:basileapp/outils/sharedData.dart';
 import 'package:basileapp/widgets/agentDashboardTab.dart';
 import 'package:basileapp/widgets/agentHistoryTab.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SingleAgentPage extends StatefulWidget {
   final dynamic agentID;
@@ -31,8 +30,7 @@ class _SingleAgentPageState extends State<SingleAgentPage>
   }
 
   Future<void> loadUserData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    sharedData = SharedData(prefs: prefs);
+    sharedData = SharedData();
 
     setState(() {
       agentName = sharedData.getAgentName().toString();

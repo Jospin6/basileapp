@@ -2,7 +2,6 @@ import 'package:basileapp/db/database_helper.dart';
 import 'package:basileapp/outils/pdfPrinter.dart';
 import 'package:basileapp/outils/sharedData.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class PaiementHistoryPage extends StatefulWidget {
   final dynamic clientID;
@@ -26,8 +25,7 @@ class _PaiementHistoryPageState extends State<PaiementHistoryPage> {
   }
 
   Future<void> loadUserData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    sharedData = SharedData(prefs: prefs);
+    sharedData = SharedData();
     setState(() {
       agentName = sharedData.getAgentName().toString();
       agentSurname = sharedData.getAgentSurname().toString();

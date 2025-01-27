@@ -1,7 +1,6 @@
 import 'package:basileapp/db/database_helper.dart';
 import 'package:basileapp/outils/sharedData.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class NewClientPage extends StatefulWidget {
   const NewClientPage({super.key});
@@ -30,8 +29,7 @@ class _NewClientPageState extends State<NewClientPage> {
   }
 
   Future<void> loadUserData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    sharedData = SharedData(prefs: prefs);
+    sharedData = SharedData();
     setState(() {
       agentID = sharedData.getAgentId().toString();
       zoneName = sharedData.getAgentZone().toString();

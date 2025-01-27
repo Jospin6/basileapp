@@ -4,7 +4,6 @@ import 'package:basileapp/outils/syncData.dart';
 import 'package:basileapp/screens/newClientPage.dart';
 import 'package:basileapp/screens/singleClientPage.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ClientPage extends StatefulWidget {
   const ClientPage({super.key});
@@ -23,14 +22,15 @@ class _ClientPageState extends State<ClientPage> {
   @override
   void initState() {
     super.initState();
+    loadUserData();
     _fetchClients();
   }
 
   Future<void> loadUserData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    sharedData = SharedData(prefs: prefs);
+    sharedData = SharedData();
+    String newAgentZone = sharedData.getAgentZone().toString();
     setState(() {
-      agentZone = sharedData.getAgentZone() as String?;
+      agentZone = newAgentZone;
     });
   }
 

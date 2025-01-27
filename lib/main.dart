@@ -1,3 +1,4 @@
+import 'package:basileapp/outils/sharedData.dart';
 import 'package:basileapp/screens/connexionPage.dart';
 import 'package:basileapp/screens/homePage.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -8,6 +9,8 @@ import 'firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SharedData.initialize();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

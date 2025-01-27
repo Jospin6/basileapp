@@ -1,4 +1,3 @@
-import 'package:basileapp/outils/paiement.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -32,7 +31,7 @@ class DatabaseHelper {
             phone TEXT,   
             zone TEXT,   
             agent TEXT,
-            created_at TEXT,  
+            created_at TEXT 
           )  
         ''');
 
@@ -109,6 +108,7 @@ class DatabaseHelper {
   // Fonction pour récupérer un client
   Future<List<Map<String, dynamic>>> getClient(int id) async {
     final db = await database;
+    // final List<Map<String, dynamic>> taxes = await db.query('taxes'); 
     return await db.query(
       'clients',
       where: 'id = ?',
@@ -219,7 +219,7 @@ class DatabaseHelper {
     );
   }
 
-  Future<List<Map<String, dynamic>>> getTax(String id) async {
+  Future<List<Map<String, dynamic>>> getTax(int id) async {
     final db = await database;
     return await db.query(
       'taxes',
@@ -231,7 +231,8 @@ class DatabaseHelper {
   // Fonction pour récupérer toutes les taxes
   Future<List<Map<String, dynamic>>> getAllTaxes() async {
     final db = await database;
-    return await db.query('taxes');
+    final List<Map<String, dynamic>> taxes = await db.query('taxes'); 
+    return taxes;
   }
 
   // Fonction pour récupérer les taxes par type
@@ -268,7 +269,7 @@ class DatabaseHelper {
   }
 
   // Fonction pour récupérer les paiements d'un client
-  Future<List<Payment>> fetchClientPaiements(int clientId) async {
+  Future<List<Map<String, dynamic>>> fetchClientPaiements(int clientId) async {
     DatabaseHelper dbHelper = DatabaseHelper();
     final db = await dbHelper.database;
 
@@ -282,22 +283,10 @@ class DatabaseHelper {
   ''', [clientId]);
 
     // Retourne une liste de paiements
-    return List.generate(results.length, (i) {
-      return Payment(
-        id: results[i]['id'],
-        idClient: results[i]['id_client'],
-        idTaxe: results[i]['id_taxe'],
-        idAgent: results[i]['id_agent'],
-        amountTot: results[i]['amount_tot'],
-        amountRecu: results[i]['amount_recu'],
-        createdAt: results[i]['created_at'],
-        clientName: results[i]['client_name'],
-        taxeName: results[i]['tax_name'],
-      );
-    });
+    return results;
   }
 
-  Future<List<Payment>> fetchLatestClientsPayments() async {
+  Future<List<Map<String, dynamic>>> fetchLatestClientsPayments() async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.rawQuery('''
     SELECT p.id, p.id_client, p.id_taxe, p.id_agent,   
@@ -310,23 +299,11 @@ class DatabaseHelper {
     LIMIT 10  
   ''',);
 
-    return List.generate(maps.length, (i) {
-      return Payment(
-        id: maps[i]['id'],
-        idClient: maps[i]['id_client'],
-        idTaxe: maps[i]['id_taxe'],
-        idAgent: maps[i]['id_agent'],
-        amountTot: maps[i]['amount_tot'],
-        amountRecu: maps[i]['amount_recu'],
-        createdAt: maps[i]['created_at'],
-        clientName: maps[i]['client_name'],
-        taxeName: maps[i]['taxe_name'],
-      );
-    });
+    return maps;
   }
 
 
-  Future<List<Payment>> fetchLatestPayments(int clientId) async {
+  Future<List<Map<String, dynamic>>> fetchLatestPayments(int clientId) async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.rawQuery('''
     SELECT p.id, p.id_client, p.id_taxe, p.id_agent,   
@@ -340,19 +317,7 @@ class DatabaseHelper {
     LIMIT 10  
   ''', [clientId]);
 
-    return List.generate(maps.length, (i) {
-      return Payment(
-        id: maps[i]['id'],
-        idClient: maps[i]['id_client'],
-        idTaxe: maps[i]['id_taxe'],
-        idAgent: maps[i]['id_agent'],
-        amountTot: maps[i]['amount_tot'],
-        amountRecu: maps[i]['amount_recu'],
-        createdAt: maps[i]['created_at'],
-        clientName: maps[i]['client_name'],
-        taxeName: maps[i]['taxe_name'],
-      );
-    });
+    return maps;
   }
 
   // Fonction pour récupérer le dernier paiement d'un client spécifique

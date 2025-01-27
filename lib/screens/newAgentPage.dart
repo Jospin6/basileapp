@@ -3,7 +3,6 @@ import 'package:basileapp/screens/agentsPage.dart';
 import 'package:basileapp/services/firebaseServices.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class NewAgentPage extends StatefulWidget {
   const NewAgentPage({super.key});
@@ -42,8 +41,7 @@ class _NewAgentPageState extends State<NewAgentPage> {
   }
 
   Future<void> loadUserData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    sharedData = SharedData(prefs: prefs);
+    sharedData = SharedData();
     setState(() {
       agentID = sharedData.getAgentId().toString();
       agentName = sharedData.getAgentName().toString();

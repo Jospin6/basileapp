@@ -1,5 +1,4 @@
 import 'package:basileapp/db/database_helper.dart';
-import 'package:basileapp/outils/paiement.dart';
 import 'package:basileapp/screens/editAgentPage.dart';
 import 'package:flutter/material.dart';
 
@@ -60,7 +59,7 @@ class _AgentDashboardTabState extends State<AgentDashboardTab> {
           height: 10,
         ),
         Expanded(
-          child: FutureBuilder<List<Payment>>(
+          child: FutureBuilder<List<Map<String, dynamic>>>(
             future: dbHelper.fetchLatestClientsPayments(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -80,10 +79,10 @@ class _AgentDashboardTabState extends State<AgentDashboardTab> {
 
                   return ListTile(
                     title: Text(
-                        'Montant Reçu: ${payment.amountRecu} | Taxe: ${payment.taxeName}'),
+                        'Montant Reçu: ${payment['amount_recu']} | Taxe: ${payment['taxe_name']}'),
                     subtitle: Text(
-                        'Client: ${payment.clientName}\nDate: ${payment.createdAt}'),
-                    trailing: payment.amountRecu < payment.amountTot
+                        'Client: ${payment['client_name']}\nDate: ${payment['created_at']}'),
+                    trailing: payment['amount_recu'] < payment['amount_tot']
                         ? const Icon(Icons.warning,
                             color: Colors
                                 .red) // Icône d'avertissement si paiement incomplet
