@@ -1,5 +1,6 @@
 import 'package:basileapp/db/database_helper.dart';
 import 'package:basileapp/outils/sharedData.dart';
+import 'package:basileapp/screens/editAgentPage.dart';
 import 'package:basileapp/widgets/agentDashboardTab.dart';
 import 'package:basileapp/widgets/agentHistoryTab.dart';
 import 'package:flutter/material.dart';
@@ -50,10 +51,38 @@ class _SingleAgentPageState extends State<SingleAgentPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.white,
+            )),
         backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
-        title: const Text("Agent Details"),
+        title: const Text(
+          "Agent Details",
+          style: TextStyle(color: Colors.white),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.edit,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EditAgentPage(agentId: widget.agentID,),
+                ),
+              );
+            },
+          ),
+        ],
         bottom: TabBar(
           controller: _tabController,
+          labelColor: Colors.white,
+          indicatorColor: Colors.white,
+          unselectedLabelColor: const Color.fromARGB(255, 209, 208, 208),
           tabs: const [
             Tab(text: "Dashboard", icon: Icon(Icons.dashboard)),
             Tab(text: "History", icon: Icon(Icons.history)),

@@ -123,8 +123,17 @@ class _EditClientPageState extends State<EditClientPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.white,
+            )),
         backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
-        title: const Text("Modifier un Client"),
+        title: const Text(
+          "Modifier un Client",
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -229,12 +238,18 @@ class _EditClientPageState extends State<EditClientPage> {
                   },
                 ),
                 const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: _submitForm,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: ElevatedButton(
+                    onPressed: _submitForm,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
+                    ),
+                    child: const Text(
+                      "Enregistrer les modifications",
+                      style: TextStyle(color: Colors.white, fontSize: 18),
+                    ),
                   ),
-                  child: const Text("Enregistrer les modifications"),
                 ),
               ],
             ),

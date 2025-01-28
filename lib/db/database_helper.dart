@@ -108,12 +108,24 @@ class DatabaseHelper {
   // Fonction pour récupérer un client
   Future<List<Map<String, dynamic>>> getClient(int id) async {
     final db = await database;
-    // final List<Map<String, dynamic>> taxes = await db.query('taxes');
     return await db.query(
       'clients',
       where: 'id = ?',
       whereArgs: [id],
     );
+  }
+
+  Future<Map<String, dynamic>?> getClientById(int id) async {
+    final db = await database;
+    final result = await db.query(
+      'clients',
+      where: 'id = ?',
+      whereArgs: [id],
+      limit: 1, // On limite à un seul résultat
+    );
+
+    // Retourner le premier résultat ou null s'il n'y en a pas
+    return result.isNotEmpty ? result.first : null;
   }
 
   // Fonction pour récupérer tous les clients d'une zone spécifique

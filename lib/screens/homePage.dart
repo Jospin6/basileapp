@@ -114,35 +114,39 @@ class _HomepageState extends State<Homepage> {
         drawer: Drawer(
           child: Column(
             children: [
-              DrawerHeader(
-                decoration: const BoxDecoration(
-                  color: Color.fromRGBO(173, 104, 0, 1),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const CircleAvatar(
-                      radius: 40,
-                      backgroundImage: AssetImage('assets/images/basile.jpg'),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      '$agentName $agentSurname',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: 200,
+                child: DrawerHeader(
+                  decoration: const BoxDecoration(
+                    color: Color.fromRGBO(173, 104, 0, 1),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const CircleAvatar(
+                        radius: 40,
+                        backgroundImage: AssetImage('assets/images/basile.jpg'),
                       ),
-                    ),
-                    Text(
-                      'Role $agentRole',
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 14,
+                      const SizedBox(height: 10),
+                      Text(
+                        '$agentName $agentSurname',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
+                      Text(
+                        'Role $agentRole',
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               ListTile(
@@ -240,40 +244,47 @@ class _HomepageState extends State<Homepage> {
             ? const AdminDashboard()
             : Column(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("$agentName $agentSurname"),
-                      Text("Rôle $agentRole"),
-                    ],
-                  ),
                   Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.white),
-                    width: MediaQuery.of(context).size.width,
-                    height: 300,
-                    child: Column(
+                    margin: const EdgeInsets.all(10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            _dashboardTile(
-                                "Total Clients", clientCount.toString()),
-                            _dashboardTile("$agentZone", null),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            _dashboardTile("Recolte du jour",
-                                "${dailyAmount.toString()} fc"),
-                            _dashboardTile(
-                                "Dette Totale", "${totalDebt.toString()} fc"),
-                          ],
-                        )
+                        Text("$agentName $agentSurname", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                        Text("Rôle $agentRole", style: const TextStyle(fontWeight: FontWeight.w500)),
                       ],
+                    ),
+                  ),
+                  Card(
+                    elevation: 4,
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      margin: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),),
+                      width: MediaQuery.of(context).size.width,
+                      height: 200,
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              _dashboardTile(
+                                  "Total Clients", clientCount.toString()),
+                              _dashboardTile("$agentZone", null),
+                            ],
+                          ),
+                          const SizedBox(height: 20,),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              _dashboardTile("Recolte du jour",
+                                  "${dailyAmount.toString()} fc"),
+                              _dashboardTile(
+                                  "Dette Totale", "${totalDebt.toString()} fc"),
+                            ],
+                          )
+                        ],
+                      ),
                     ),
                   ),
                   Expanded(
@@ -303,7 +314,7 @@ class _HomepageState extends State<Homepage> {
                           
                             return ListTile(
                               title: Text(
-                                  'Montant Reçu: ${payment['amount_recu']} | Taxe: ${payment['taxe_name']}'),
+                                  'Montant: ${payment['amount_recu']} fc | Taxe: ${payment['taxe_name']}'),
                               subtitle: Text(
                                   'Client: ${payment['client_name']}\nDate: ${formatDate.formatCreatedAt(payment['created_at'])}'),
                               trailing: payment['amount_recu'] <

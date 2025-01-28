@@ -1,5 +1,6 @@
 import 'package:basileapp/db/database_helper.dart';
-import 'package:basileapp/screens/editAgentPage.dart';
+import 'package:basileapp/outils/formatDate.dart';
+import 'package:basileapp/outils/syncData.dart';
 import 'package:flutter/material.dart';
 
 class AgentDashboardTab extends StatefulWidget {
@@ -22,38 +23,59 @@ class AgentDashboardTab extends StatefulWidget {
 
 class _AgentDashboardTabState extends State<AgentDashboardTab> {
   DatabaseHelper dbHelper = DatabaseHelper();
+  Formatdate formatDate = Formatdate();
+  SyncData syncData = SyncData();
+  
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Row(
-          children: [
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EditAgentPage(
-                        agentId: widget.agentID,
-                      ),
+        Card(
+          elevation: 4,
+          child: Container(
+            margin: const EdgeInsets.all(10),
+            width: MediaQuery.of(context).size.width,
+            height: 100,
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(15)),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "${widget.agentName} ${widget.agentSurname}",
+                      style: const TextStyle(
+                          fontSize: 25, fontWeight: FontWeight.bold),
                     ),
-                  );
-                },
-                child: const Icon(Icons.edit))
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text("${widget.agentName} ${widget.agentSurname}"),
-            Text("Rôle ${widget.agentRole}"),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text("Zone d'activité ${widget.agentZone}"),
-          ],
+                    IconButton(
+                    onPressed: () async {
+                      await syncData.fetchAndSyncTaxes();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Taxes synchronisées !')),
+                      );
+                    },
+                    icon: const Icon(Icons.sync))
+                  ],
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Zone de ${widget.agentZone}",
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                    Text(
+                      "Rôle ${widget.agentRole}",
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
         ),
         const SizedBox(
           height: 10,
@@ -79,9 +101,9 @@ class _AgentDashboardTabState extends State<AgentDashboardTab> {
 
                   return ListTile(
                     title: Text(
-                        'Montant Reçu: ${payment['amount_recu']} | Taxe: ${payment['taxe_name']}'),
+                        'Montant: ${payment['amount_recu']} fc | Taxe: ${payment['taxe_name']}'),
                     subtitle: Text(
-                        'Client: ${payment['client_name']}\nDate: ${payment['created_at']}'),
+                        'Client: ${payment['client_name']}\nDate: ${formatDate.formatCreatedAt(payment['created_at'])}'),
                     trailing: payment['amount_recu'] < payment['amount_tot']
                         ? const Icon(Icons.warning,
                             color: Colors

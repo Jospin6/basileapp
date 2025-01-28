@@ -1,4 +1,5 @@
 import 'package:basileapp/db/database_helper.dart';
+import 'package:basileapp/outils/formatDate.dart';
 import 'package:basileapp/screens/paiementHistoryPage.dart';
 import 'package:flutter/material.dart';
 
@@ -12,12 +13,87 @@ class PaiementsPage extends StatefulWidget {
 
 class _PaiementsPageState extends State<PaiementsPage> {
   DatabaseHelper dbHelper = DatabaseHelper();
+  Formatdate formatDate = Formatdate();
+
+  void _showUpdatePaymentDialog(
+      BuildContext context, double amountRecu, int idTaxe) {
+    final TextEditingController _updateAmountController =
+        TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            "Payer le reste du: $amountRecu fc reçu",
+            style: const TextStyle(fontSize: 16),
+          ),
+          content: TextFormField(
+            controller: _updateAmountController,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+              labelText: "Montant supplémentaire",
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text("Annuler"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final enteredAmount =
+                    double.tryParse(_updateAmountController.text);
+
+                if (enteredAmount != null) {
+                  final newAmountRecu = amountRecu + enteredAmount;
+
+                  await dbHelper.updatePayment(idTaxe, {
+                    "amount_recu": newAmountRecu,
+                  });
+
+                  Navigator.pop(context);
+
+                  setState(() {});
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Paiement mis à jour avec succès"),
+                    ),
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
+              ),
+              child: const Text(
+                "Mettre à jour",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Basile', style: TextStyle(color: Colors.white),),
+          leading: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(
+                Icons.arrow_back_ios,
+                color: Colors.white,
+              )),
+          title: const Text(
+            'Paiements du client',
+            style: TextStyle(color: Colors.white),
+          ),
           backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
           actions: [
             IconButton(
@@ -29,7 +105,7 @@ class _PaiementsPageState extends State<PaiementsPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const PaiementHistoryPage(),
+                    builder: (context) => PaiementHistoryPage(clientID: widget.clientID,),
                   ),
                 );
               },
@@ -54,11 +130,26 @@ class _PaiementsPageState extends State<PaiementsPage> {
               itemBuilder: (context, index) {
                 final payment = payments[index];
                 return ListTile(
-                  title: Text('Montant Reçu: ${payment['amount_recu']}'),
+                  title: Text('Montant: ${payment['amount_recu']} fc'),
                   subtitle: Text(
-                    'Client: ${payment['client_name']}, Taxe: ${payment['tax_name']}, Date: ${payment['created_at']}',
+                    'Client: ${payment['client_name']}, Taxe: ${payment['tax_name']}, ${formatDate.formatCreatedAt(payment['created_at'])}',
                   ),
-                  trailing: Text('Total: ${payment['amount_tot']}'),
+                  trailing: Column(
+                    children: [
+                      payment['amount_recu'] < payment['amount_tot']
+                          ? IconButton(
+                              onPressed: () {
+                                _showUpdatePaymentDialog(context,
+                                    payment['amount_recu'], payment['id']);
+                              },
+                              icon:
+                                  const Icon(Icons.payment, color: Colors.red),
+                            )
+                          : const Icon(Icons.check, color: Colors.green),
+                      if (payment['amount_recu'] >= payment['amount_tot'])
+                        Text('Total: ${payment['amount_tot']} fc')
+                    ],
+                  ),
                 );
               },
             );

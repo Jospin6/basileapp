@@ -1,4 +1,5 @@
 import 'package:basileapp/db/database_helper.dart';
+import 'package:basileapp/outils/formatDate.dart';
 import 'package:flutter/material.dart';
 
 class AgentHistoryTab extends StatefulWidget {
@@ -11,6 +12,7 @@ class AgentHistoryTab extends StatefulWidget {
 
 class _AgentHistoryTabState extends State<AgentHistoryTab> {
   DatabaseHelper dbHelper = DatabaseHelper();
+  Formatdate formatDate = Formatdate();
 
   @override
   Widget build(BuildContext context) {
@@ -33,13 +35,18 @@ class _AgentHistoryTabState extends State<AgentHistoryTab> {
           itemBuilder: (context, index) {
             final payment = paymentHistory[index];
             return ListTile(
-              title: Text('Montant: ${payment['amount_recu']}'),
+              title: Text(
+                'Montant: ${payment['amount_recu']} fc',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Client: ${payment['client_name']}'),
-                  Text('Taxe: ${payment['tax_amount']}'),
-                  Text('Date: ${payment['created_at']}'),
+                  Text('Client: ${payment['client_name']}',
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Text('Taxe: ${payment['tax_amount']} fc'),
+                  Text(
+                      'Date: ${formatDate.formatCreatedAt(payment['created_at'])}'),
                 ],
               ),
               isThreeLine: true,

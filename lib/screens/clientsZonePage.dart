@@ -16,6 +16,12 @@ class _ClientsZonePageState extends State<ClientsZonePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(
+                Icons.arrow_back_ios,
+                color: Colors.white,
+              )),
         backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
         title: Text("Clients de la zone : ${widget.zoneName}", style: const TextStyle(color: Colors.white),),
       ),

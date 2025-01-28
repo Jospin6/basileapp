@@ -16,7 +16,6 @@ class _SettingsPageState extends State<SettingsPage>
   SyncData syncData = SyncData();
   FirebaseServices firebaseServices = FirebaseServices();
 
-  
   @override
   void initState() {
     super.initState();
@@ -28,14 +27,22 @@ class _SettingsPageState extends State<SettingsPage>
     _tabController.dispose();
     super.dispose();
   }
-  
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.white,
+            )),
         backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
-        title: const Text("Paramètres"),
+        title: const Text(
+          "Paramètres",
+          style: TextStyle(color: Colors.white),
+        ),
         bottom: TabBar(
           controller: _tabController,
           labelColor: Colors.white,

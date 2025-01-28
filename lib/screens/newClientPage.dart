@@ -40,8 +40,17 @@ class _NewClientPageState extends State<NewClientPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.white,
+            )),
         backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
-        title: const Text("Ajouter un Client"),
+        title: const Text(
+          "Ajouter un Client",
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -122,45 +131,51 @@ class _NewClientPageState extends State<NewClientPage> {
                   },
                 ),
                 const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      // Traitement des données
-                      final clientData = {
-                        "name": _nameController.text,
-                        "postName": _postNameController.text,
-                        "commerce": _commerceController.text,
-                        "address": _addressController.text,
-                        "phone": _phoneController.text,
-                        "zone": zoneName,
-                        "agent":
-                            agentID, // Remplacez par l'ID de l'agent approprié
-                        "created_at": DateTime.now().toIso8601String()
-                      };
-                      print("Client ajouté : $clientData");
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        // Traitement des données
+                        final clientData = {
+                          "name": _nameController.text,
+                          "postName": _postNameController.text,
+                          "commerce": _commerceController.text,
+                          "address": _addressController.text,
+                          "phone": _phoneController.text,
+                          "zone": zoneName,
+                          "agent":
+                              agentID, // Remplacez par l'ID de l'agent approprié
+                          "created_at": DateTime.now().toIso8601String()
+                        };
+                        print("Client ajouté : $clientData");
 
-                      // Insérer les données dans la base de données
-                      DatabaseHelper dbHelper = DatabaseHelper();
-                      await dbHelper.insertClient(clientData);
+                        // Insérer les données dans la base de données
+                        DatabaseHelper dbHelper = DatabaseHelper();
+                        await dbHelper.insertClient(clientData);
 
-                      // Nettoyer les champs
-                      _nameController.clear();
-                      _postNameController.clear();
-                      _commerceController.clear();
-                      _addressController.clear();
-                      _phoneController.clear();
+                        // Nettoyer les champs
+                        _nameController.clear();
+                        _postNameController.clear();
+                        _commerceController.clear();
+                        _addressController.clear();
+                        _phoneController.clear();
 
-                      // Afficher un message de succès ou rediriger si nécessaire
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text("Client ajouté avec succès")),
-                      );
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
+                        // Afficher un message de succès ou rediriger si nécessaire
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text("Client ajouté avec succès")),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
+                    ),
+                    child: const Text(
+                      "Enregistrer",
+                      style: TextStyle(color: Colors.white, fontSize: 18),
+                    ),
                   ),
-                  child: const Text("Enregistrer", style: TextStyle(color: Colors.white),),
                 ),
               ],
             ),

@@ -1,11 +1,12 @@
 import 'package:basileapp/db/database_helper.dart';
+import 'package:basileapp/outils/formatDate.dart';
 import 'package:basileapp/outils/pdfPrinter.dart';
 import 'package:basileapp/outils/sharedData.dart';
 import 'package:flutter/material.dart';
 
 class PaiementHistoryPage extends StatefulWidget {
-  final dynamic clientID;
-  const PaiementHistoryPage({super.key, this.clientID});
+  final int clientID;
+  const PaiementHistoryPage({super.key, required this.clientID});
 
   @override
   State<PaiementHistoryPage> createState() => _PaiementHistoryPageState();
@@ -13,6 +14,7 @@ class PaiementHistoryPage extends StatefulWidget {
 
 class _PaiementHistoryPageState extends State<PaiementHistoryPage> {
   final pdfPrinter = PdfPrinter();
+  Formatdate formatDate = Formatdate();
   String? agentName;
   String? agentSurname;
   String? agentZone;
@@ -38,8 +40,14 @@ class _PaiementHistoryPageState extends State<PaiementHistoryPage> {
     DatabaseHelper dbHelper = DatabaseHelper();
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(
+                Icons.arrow_back_ios,
+                color: Colors.white,
+              )),
         backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
-        title: const Text("Historique de paiements"),
+        title: const Text("Historique de paiements", style: TextStyle(color: Colors.white),),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: dbHelper.getPaymentHistoryByClient(widget.clientID),
@@ -60,14 +68,14 @@ class _PaiementHistoryPageState extends State<PaiementHistoryPage> {
             itemBuilder: (context, index) {
               final payment = paymentHistory[index];
               return ListTile(
-                title: Text('Montant: ${payment['amount_recu']}'),
+                title: Text('Montant: ${payment['amount_recu']} fc'),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Client: ${payment['client_name']}'),
                     Text('Taxe: ${payment['tax_amount']}'),
-                    Text('Agent: ${payment['agent_name']}'),
-                    Text('Date: ${payment['created_at']}'),
+                    Text('Agent: $agentName'),
+                    Text('Date: ${formatDate.formatCreatedAt(payment['created_at'])}'),
                   ],
                 ),
                 isThreeLine: true,
@@ -75,7 +83,7 @@ class _PaiementHistoryPageState extends State<PaiementHistoryPage> {
                     onPressed: () async {
                       // Récupérer les données du client et taxe
                       List<Map<String, dynamic>> clientData =
-                          await dbHelper.getClient(int.parse(widget.clientID));
+                          await dbHelper.getClient(widget.clientID);
                       List<Map<String, dynamic>> taxeData =
                           await dbHelper.getTax(payment['id_taxe']);
                       if (clientData.isEmpty || taxeData.isEmpty) {

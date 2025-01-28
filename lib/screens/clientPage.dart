@@ -3,6 +3,7 @@ import 'package:basileapp/outils/sharedData.dart';
 import 'package:basileapp/outils/syncData.dart';
 import 'package:basileapp/screens/newClientPage.dart';
 import 'package:basileapp/screens/singleClientPage.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 
 class ClientPage extends StatefulWidget {
@@ -18,12 +19,30 @@ class _ClientPageState extends State<ClientPage> {
   SyncData syncData = SyncData();
   late SharedData sharedData;
   String? agentZone;
+  bool isConnect = false;
 
   @override
   void initState() {
     super.initState();
     loadUserData();
     _fetchClients();
+    _checkConnection();
+  }
+
+  Future<bool> checkInternetConnection() async {
+    final connectivityResult = await Connectivity().checkConnectivity();
+
+    // Vérifie si l'appareil est connecté au Wi-Fi ou aux données mobiles
+    return connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi;
+  }
+
+  Future<void> _checkConnection() async {
+    final isConnected = await checkInternetConnection();
+
+    setState(() {
+      isConnect = isConnected;
+    });
   }
 
   Future<void> loadUserData() async {
@@ -52,41 +71,53 @@ class _ClientPageState extends State<ClientPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
-        title: const Text("Client Page", style: TextStyle(color: Colors.white),)
-        ),
+          leading: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(
+                Icons.arrow_back_ios,
+                color: Colors.white,
+              )),
+          backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
+          title: const Text(
+            "Client Page",
+            style: TextStyle(color: Colors.white),
+          )),
       body: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const NewClientPage(),
-                    ),
-                  );
-                },
-                style: TextButton.styleFrom(
-                  backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
-                ),
-                child: const Text("Add Client"),
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              IconButton(
-                  onPressed: () async {
-                    await syncData.synchronizeData();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text('Synchronisation terminée !')),
+          Container(
+            margin: const EdgeInsets.all(10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const NewClientPage(),
+                      ),
                     );
                   },
-                  icon: const Icon(Icons.sync))
-            ],
+                  style: TextButton.styleFrom(
+                    backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
+                  ),
+                  child: const Text(
+                    "Add Client",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                if (isConnect)
+                  IconButton(
+                      onPressed: () async {
+                        await syncData.synchronizeData();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Synchronisation terminée !')),
+                        );
+                      },
+                      icon: const Icon(Icons.sync))
+              ],
+            ),
           ),
           const SizedBox(height: 10),
           Expanded(
@@ -95,9 +126,12 @@ class _ClientPageState extends State<ClientPage> {
               itemBuilder: (context, index) {
                 final client = _clients[index];
                 return ListTile(
-                  title: Text(client['name'] ?? 'Nom non disponible'),
+                  leading: CircleAvatar(
+                    child: Text(client['name'].substring(0, 1).toUpperCase()),
+                  ),
+                  title: Text('${client['name']} ${client['postName']}'),
                   subtitle:
-                      Text(client['postName'] ?? 'Post-nom non disponible'),
+                      Text('${client['commerce']}, télé: ${client['phone']}'),
                   onTap: () {
                     Navigator.push(
                       context,

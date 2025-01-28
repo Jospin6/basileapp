@@ -1,4 +1,5 @@
 import 'package:basileapp/db/database_helper.dart';
+import 'package:basileapp/outils/formatDate.dart';
 import 'package:basileapp/outils/pdfPrinter.dart';
 import 'package:basileapp/outils/sharedData.dart';
 import 'package:basileapp/screens/editClientPage.dart';
@@ -17,6 +18,7 @@ class SingleClientPage extends StatefulWidget {
 
 class _SingleClientPageState extends State<SingleClientPage> {
   DatabaseHelper dbHelper = DatabaseHelper();
+  Formatdate formatDate = Formatdate();
   String? agentName;
   String? agentSurname;
   String? agentZone;
@@ -29,7 +31,7 @@ class _SingleClientPageState extends State<SingleClientPage> {
   String? numTeleAdmin;
 
   late SharedData sharedData;
-  // List<Map<String, dynamic>> _taxes = [];
+  Map<String, dynamic>? client;
 
   @override
   void initState() {
@@ -37,15 +39,8 @@ class _SingleClientPageState extends State<SingleClientPage> {
     loadUserData();
     fetchTotPaiedClient();
     fetchTotClientDept();
+    _loadClient();
   }
-
-  // Future<void> _fetchTaxes() async {
-  //   List<Map<String, dynamic>> taxes =
-  //       await dbHelper.getAllTaxes(); // Récupération des données
-  //   setState(() {
-  //     _taxes = taxes; // Mise à jour de l'état avec les taxes récupérées
-  //   });
-  // }
 
   @override
   void dispose() {
@@ -56,6 +51,13 @@ class _SingleClientPageState extends State<SingleClientPage> {
     double somme = await dbHelper.getTotalPaidByClient(widget.clientID);
     setState(() {
       clientPaiedSomme = somme;
+    });
+  }
+
+  Future<void> _loadClient() async {
+    final fetchedClient = await dbHelper.getClientById(widget.clientID);
+    setState(() {
+      client = fetchedClient;
     });
   }
 
@@ -154,6 +156,12 @@ class _SingleClientPageState extends State<SingleClientPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.white,
+            )),
         backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
         title: const Text(
           "Détails du client",
@@ -178,36 +186,62 @@ class _SingleClientPageState extends State<SingleClientPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                InkWell(
-                  onTap: () => {showTaxesDialog(context)},
-                  child: Container(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: const Text("Payer taxe"),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 10,
-            ),
             Container(
               width: double.infinity,
-              height: 150,
+              height: 180,
               margin: const EdgeInsets.all(10),
-              child:Card(
+              child: Card(
                 elevation: 4,
                 child: Column(
                   children: [
-                    Row(
-                      children: [
-                        _dashboardTile("Total Paiement",
-                            clientPaiedSomme.toString()),
-                        _dashboardTile("Total Dette",
-                            clientDept.toString()),
-                      ],
+                    Container(
+                      padding:
+                          const EdgeInsets.only(top: 10, left: 10, right: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          if (client != null)
+                            Text(
+                              '${client!['name']} ${client!['postName']}',
+                              style: const TextStyle(
+                                  fontSize: 25, fontWeight: FontWeight.bold),
+                            ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding:
+                          const EdgeInsets.only(top: 10, left: 10, right: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          if (client != null)
+                            Text(
+                              '${client!['commerce']}',
+                              style: const TextStyle(
+                                  fontSize: 15, fontWeight: FontWeight.bold),
+                            ),
+                          if (client != null)
+                            Text(
+                              '${client!['phone']}',
+                              style: const TextStyle(
+                                fontSize: 15,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _dashboardTile("Total Paiement",
+                              '${clientPaiedSomme.toString()} fc'),
+                          _dashboardTile(
+                              "Total Dette", '${clientDept.toString()} fc'),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -216,32 +250,44 @@ class _SingleClientPageState extends State<SingleClientPage> {
             const SizedBox(
               height: 10,
             ),
-            Row(
-              children: [
-                ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PaiementsPage(
-                            clientID: widget.clientID,
+            Container(
+              margin: const EdgeInsets.only(left: 10, right: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PaiementsPage(
+                              clientID: widget.clientID,
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                    child: const Text(
-                      "plus",
-                      style: TextStyle(color: Colors.blue),
-                    ))
-              ],
+                        );
+                      },
+                      child: const Text(
+                        "plus",
+                        style: TextStyle(color: Color.fromRGBO(173, 104, 0, 1)),
+                      )),
+                  ElevatedButton(
+                      onPressed: () => {showTaxesDialog(context)},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
+                      ),
+                      child: const Text(
+                        "Payer taxe",
+                        style: TextStyle(color: Colors.white),
+                      ))
+                ],
+              ),
             ),
             const SizedBox(
               height: 10,
             ),
-            Container(
+            SizedBox(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
-              padding: const EdgeInsets.only(left: 10, right: 10),
               child: FutureBuilder<List<Map<String, dynamic>>>(
                 future: dbHelper.fetchLatestPayments(widget.clientID),
                 builder: (context, snapshot) {
@@ -263,10 +309,10 @@ class _SingleClientPageState extends State<SingleClientPage> {
 
                       return ListTile(
                         title: Text(
-                          'Montant Reçu: ${payment['amount_recu']} Taxe: ${payment['taxe_name']}',
+                          'Montant: ${payment['amount_recu']} fc Taxe: ${payment['taxe_name']}',
                         ),
                         subtitle: Text(
-                          'Client: ${payment['client_name']}, Date: ${payment['created_at']}',
+                          formatDate.formatCreatedAt(payment['created_at']),
                         ),
                         trailing: payment['amount_recu'] < payment['amount_tot']
                             ? IconButton(
@@ -343,10 +389,17 @@ class _SingleClientPageState extends State<SingleClientPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                type,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                padding: const EdgeInsets.all(5),
+                decoration: const BoxDecoration(color: Colors.black),
+                child: Text(
+                  type,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.white),
+                ),
               ),
               ...taxList.map((taxInfo) {
                 return ListTile(
@@ -365,7 +418,7 @@ class _SingleClientPageState extends State<SingleClientPage> {
                   title: Text(
                     '${taxInfo['name']}',
                     style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold),
+                        fontSize: 16),
                   ),
                 );
               }),
@@ -380,7 +433,10 @@ class _SingleClientPageState extends State<SingleClientPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Liste des Taxes'),
+          title: const Text(
+            'Liste des Taxes',
+            style: TextStyle(fontSize: 20),
+          ),
           content: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

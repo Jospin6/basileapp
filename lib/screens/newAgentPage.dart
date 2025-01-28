@@ -111,8 +111,17 @@ class _NewAgentPageState extends State<NewAgentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.white,
+            )),
         backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
-        title: const Text("Ajouter un agent"),
+        title: const Text(
+          "Ajouter un agent",
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -232,7 +241,10 @@ class _NewAgentPageState extends State<NewAgentPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
                 ),
-                child: const Text("Ajouter l'agent", style: TextStyle(color: Colors.white),),
+                child: const Text(
+                  "Ajouter l'agent",
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           ),
