@@ -23,14 +23,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Basile',
+      title: 'Chefferie de Basile',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
             seedColor: const Color.fromRGBO(173, 104, 0, 1)),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Basile'),
+      home: const MyHomePage(title: 'Chefferie de Basile'),
     );
   }
 }
@@ -128,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
         title: Text(
           widget.title,
           style: const TextStyle(color: Colors.white),
@@ -138,7 +138,6 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text("CHEFFERIE DE BASILE"),
             Container(
               width: double.infinity,
               height: 300,
@@ -150,21 +149,28 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ),
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => agentID != null
-                          ? const Homepage()
-                          : const ConnexionPage(),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
-                ),
-                child: const Text("Commencer", style: TextStyle(color: Colors.white),))
+            Container(
+              margin: const EdgeInsets.all(10),
+              width: MediaQuery.of(context).size.width,
+              child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => agentID != null
+                            ? const Homepage()
+                            : const ConnexionPage(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
+                  ),
+                  child: const Text(
+                    "Commencer",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  )),
+            )
           ],
         ),
       ),
