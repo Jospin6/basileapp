@@ -108,7 +108,7 @@ class DatabaseHelper {
   // Fonction pour récupérer un client
   Future<List<Map<String, dynamic>>> getClient(int id) async {
     final db = await database;
-    // final List<Map<String, dynamic>> taxes = await db.query('taxes'); 
+    // final List<Map<String, dynamic>> taxes = await db.query('taxes');
     return await db.query(
       'clients',
       where: 'id = ?',
@@ -231,7 +231,7 @@ class DatabaseHelper {
   // Fonction pour récupérer toutes les taxes
   Future<List<Map<String, dynamic>>> getAllTaxes() async {
     final db = await database;
-    final List<Map<String, dynamic>> taxes = await db.query('taxes'); 
+    final List<Map<String, dynamic>> taxes = await db.query('taxes');
     return taxes;
   }
 
@@ -288,7 +288,8 @@ class DatabaseHelper {
 
   Future<List<Map<String, dynamic>>> fetchLatestClientsPayments() async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.rawQuery('''
+    final List<Map<String, dynamic>> maps = await db.rawQuery(
+      '''
     SELECT p.id, p.id_client, p.id_taxe, p.id_agent,   
            p.amount_tot, p.amount_recu, p.created_at,   
            c.name AS client_name, t.name AS taxe_name  
@@ -297,11 +298,11 @@ class DatabaseHelper {
     JOIN taxes t ON p.id_taxe = t.id   
     ORDER BY p.created_at DESC  
     LIMIT 10  
-  ''',);
+  ''',
+    );
 
     return maps;
   }
-
 
   Future<List<Map<String, dynamic>>> fetchLatestPayments(int clientId) async {
     final db = await database;
@@ -481,10 +482,10 @@ class DatabaseHelper {
     try {
       // Obtenir la date du jour actuel (à minuit)
       final today = DateTime.now();
-      final todayStart =
-          DateTime(today.year, today.month, today.day).toIso8601String();
-      final todayEnd = DateTime(today.year, today.month, today.day, 23, 59, 59)
-          .toIso8601String();
+      final todayStart = DateTime(today.year, today.month, today.day)
+          .toIso8601String()
+          .split('T')[0]; // Garde uniquement la partie date
+      final todayEnd = '$todayStart 23:59:59'; // Fin de journée au format ISO
 
       // Exécuter la requête SQL pour la somme
       final result = await db.rawQuery('''
@@ -494,7 +495,10 @@ class DatabaseHelper {
     ''', [todayStart, todayEnd]);
 
       // Retourner la somme ou 0 si aucune donnée
-      return result[0]['total'] != null ? (result[0]['total'] as double) : 0.0;
+      if (result.isNotEmpty && result[0]['total'] != null) {
+        return double.parse(result[0]['total'].toString());
+      }
+      return 0.0;
     } catch (e) {
       print('Erreur lors de la récupération de la somme journalière : $e');
       return 0.0;

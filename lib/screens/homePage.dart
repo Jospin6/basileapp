@@ -1,4 +1,5 @@
 import 'package:basileapp/db/database_helper.dart';
+import 'package:basileapp/outils/formatDate.dart';
 import 'package:basileapp/outils/sharedData.dart';
 import 'package:basileapp/screens/agentsPage.dart';
 import 'package:basileapp/screens/clientPage.dart';
@@ -19,17 +20,23 @@ class Homepage extends StatefulWidget {
 class _HomepageState extends State<Homepage> {
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   DatabaseHelper dbHelper = DatabaseHelper();
+  Formatdate formatDate = Formatdate();
   late SharedData sharedData;
   String? agentID;
   String? agentName;
   String? agentSurname;
   String? agentZone;
   String? agentRole;
+  int clientCount = 0;
+  double dailyAmount = 0;
+  double totalDebt = 0;
 
   @override
   void initState() {
     super.initState();
     loadUserData();
+    fetchClientCount();
+    fetchDailyAmount();
   }
 
   Future<void> loadUserData() async {
@@ -63,19 +70,25 @@ class _HomepageState extends State<Homepage> {
     }
   }
 
-  Future<int> fetchClientCount() async {
-    int clientCount = await dbHelper.getClientCount();
-    return clientCount;
+  Future<void> fetchClientCount() async {
+    int count = await dbHelper.getClientCount();
+    setState(() {
+      clientCount = count;
+    });
   }
 
-  Future<double> fetchDailyAmount() async {
-    double dailyAmount = await dbHelper.getDailyAmount();
-    return dailyAmount;
+  Future<void> fetchDailyAmount() async {
+    double mount = await dbHelper.getDailyAmount();
+    setState(() {
+      dailyAmount = mount;
+    });
   }
 
-  Future<double> fetchDebts() async {
-    double totalDebt = await dbHelper.getTotalDebt();
-    return totalDebt;
+  Future<void> fetchDebts() async {
+    double debt = await dbHelper.getTotalDebt();
+    setState(() {
+      totalDebt = debt;
+    });
   }
 
   @override
@@ -205,7 +218,6 @@ class _HomepageState extends State<Homepage> {
                   );
                 },
               ),
-
               ListTile(
                 leading: const Icon(Icons.person),
                 title: const Text('Deconnexion'),
@@ -242,24 +254,25 @@ class _HomepageState extends State<Homepage> {
                         color: Colors.white),
                     width: MediaQuery.of(context).size.width,
                     height: 300,
-                    child: const Column(
+                    child: Column(
                       children: [
-                        // Row(
-                        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        //   children: [
-                        //     _dashboardTile(
-                        //         "Total Clients", "${fetchClientCount()}"),
-                        //     _dashboardTile("$agentZone", null),
-                        //   ],
-                        // ),
-                        // Row(
-                        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        //   children: [
-                        //     _dashboardTile(
-                        //         "Recolte du jour", "${fetchDailyAmount()}Fc"),
-                        //     _dashboardTile("Dette Totale", "${fetchDebts()}Fc"),
-                        //   ],
-                        // )
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _dashboardTile(
+                                "Total Clients", clientCount.toString()),
+                            _dashboardTile("$agentZone", null),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _dashboardTile("Recolte du jour",
+                                "${dailyAmount.toString()} fc"),
+                            _dashboardTile(
+                                "Dette Totale", "${totalDebt.toString()} fc"),
+                          ],
+                        )
                       ],
                     ),
                   ),
@@ -287,13 +300,14 @@ class _HomepageState extends State<Homepage> {
                           itemCount: payments.length,
                           itemBuilder: (context, index) {
                             final payment = payments[index];
-
+                          
                             return ListTile(
                               title: Text(
                                   'Montant Reçu: ${payment['amount_recu']} | Taxe: ${payment['taxe_name']}'),
                               subtitle: Text(
-                                  'Client: ${payment['client_name']}\nDate: ${payment['created_at']}'),
-                              trailing: payment['amount_recu'] < payment['amount_tot']
+                                  'Client: ${payment['client_name']}\nDate: ${formatDate.formatCreatedAt(payment['created_at'])}'),
+                              trailing: payment['amount_recu'] <
+                                      payment['amount_tot']
                                   ? const Icon(Icons.warning,
                                       color: Colors
                                           .red) // Icône d'avertissement si paiement incomplet
@@ -312,17 +326,20 @@ class _HomepageState extends State<Homepage> {
 
   // Widget pour les tuiles du dashboard
   Widget _dashboardTile(String title, dynamic value) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        value != null
-            ? Text(value,
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold))
-            : const Text(""),
-        const SizedBox(height: 8),
-        Text(title, style: const TextStyle(fontSize: 14, color: Colors.white)),
-      ],
+    return Container(
+      padding: const EdgeInsets.all(5),
+      child: Column(
+        children: [
+          value != null
+              ? Text(value,
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold))
+              : const Text(""),
+          const SizedBox(height: 8),
+          Text(title,
+              style: const TextStyle(fontSize: 14, color: Colors.black)),
+        ],
+      ),
     );
   }
 }

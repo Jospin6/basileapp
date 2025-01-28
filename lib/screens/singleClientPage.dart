@@ -20,6 +20,8 @@ class _SingleClientPageState extends State<SingleClientPage> {
   String? agentName;
   String? agentSurname;
   String? agentZone;
+  double clientPaiedSomme = 0;
+  double clientDept = 0;
 
   final pdfPrinter = PdfPrinter();
 
@@ -33,7 +35,8 @@ class _SingleClientPageState extends State<SingleClientPage> {
   void initState() {
     super.initState();
     loadUserData();
-    // _fetchTaxes();
+    fetchTotPaiedClient();
+    fetchTotClientDept();
   }
 
   // Future<void> _fetchTaxes() async {
@@ -47,6 +50,20 @@ class _SingleClientPageState extends State<SingleClientPage> {
   @override
   void dispose() {
     super.dispose();
+  }
+
+  Future<void> fetchTotPaiedClient() async {
+    double somme = await dbHelper.getTotalPaidByClient(widget.clientID);
+    setState(() {
+      clientPaiedSomme = somme;
+    });
+  }
+
+  Future<void> fetchTotClientDept() async {
+    double dpt = await dbHelper.getClientDebt(widget.clientID);
+    setState(() {
+      clientDept = dpt;
+    });
   }
 
   Future<void> loadUserData() async {
@@ -71,7 +88,8 @@ class _SingleClientPageState extends State<SingleClientPage> {
     return totalPaid;
   }
 
-  void _showUpdatePaymentDialog(BuildContext context, double amountRecu, int idTaxe) {
+  void _showUpdatePaymentDialog(
+      BuildContext context, double amountRecu, int idTaxe) {
     final TextEditingController _updateAmountController =
         TextEditingController();
 
@@ -179,16 +197,16 @@ class _SingleClientPageState extends State<SingleClientPage> {
               width: double.infinity,
               height: 150,
               margin: const EdgeInsets.all(10),
-              child: const Card(
+              child:Card(
                 elevation: 4,
                 child: Column(
                   children: [
                     Row(
                       children: [
-                        // _dashboardTile("Total Paiement",
-                        //     "${getTotPaiedClient(widget.clientID)}"),
-                        // _dashboardTile("Total Dette",
-                        //     "${fetchClientDebts(widget.clientID)}"),
+                        _dashboardTile("Total Paiement",
+                            clientPaiedSomme.toString()),
+                        _dashboardTile("Total Dette",
+                            clientDept.toString()),
                       ],
                     ),
                   ],
@@ -220,29 +238,6 @@ class _SingleClientPageState extends State<SingleClientPage> {
             const SizedBox(
               height: 10,
             ),
-            // Container(
-            //     width: MediaQuery.of(context).size.width,
-            //     height: MediaQuery.of(context).size.height,
-            //     padding: const EdgeInsets.only(left: 10, right: 10),
-            //     child: _taxes.isEmpty
-            //         ? Center(
-            //             child:
-            //                 CircularProgressIndicator()) // Affiche un indicateur de chargement pendant la récupération
-            //         : ListView.builder(
-            //             itemCount: _taxes.length,
-            //             itemBuilder: (context, index) {
-            //               final tax = _taxes[index];
-            //               return ListTile(
-            //                 title: Text(tax['name'] ??
-            //                     'Nom inconnu'), // Affiche le nom de la taxe
-            //                 subtitle: Text(
-            //                     'ID: ${tax['id']}'), // Montre l'ID de la taxe
-            //                 trailing: Text(
-            //                     '${tax['amount']} €'), // Montre le montant de la taxe
-            //               );
-            //             },
-            //           )),
-
             Container(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
@@ -253,7 +248,8 @@ class _SingleClientPageState extends State<SingleClientPage> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
-                    return Center(child: Text("Erreur putain: ${snapshot.error}"));
+                    return Center(
+                        child: Text("Erreur putain: ${snapshot.error}"));
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return const Center(child: Text("Aucun paiement trouvé"));
                   }
@@ -275,7 +271,8 @@ class _SingleClientPageState extends State<SingleClientPage> {
                         trailing: payment['amount_recu'] < payment['amount_tot']
                             ? IconButton(
                                 onPressed: () {
-                                  _showUpdatePaymentDialog(context, payment['amount_recu'], payment['id']);
+                                  _showUpdatePaymentDialog(context,
+                                      payment['amount_recu'], payment['id']);
                                 },
                                 icon: const Icon(Icons.payment,
                                     color: Colors.red),
@@ -295,17 +292,20 @@ class _SingleClientPageState extends State<SingleClientPage> {
 
   // Widget pour les tuiles du dashboard
   Widget _dashboardTile(String title, dynamic value) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        value != null
-            ? Text(value,
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold))
-            : const Text(""),
-        const SizedBox(height: 8),
-        Text(title, style: const TextStyle(fontSize: 14, color: Colors.white)),
-      ],
+    return Container(
+      padding: const EdgeInsets.all(5),
+      child: Column(
+        children: [
+          value != null
+              ? Text(value,
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold))
+              : const Text(""),
+          const SizedBox(height: 8),
+          Text(title,
+              style: const TextStyle(fontSize: 14, color: Colors.black)),
+        ],
+      ),
     );
   }
 
