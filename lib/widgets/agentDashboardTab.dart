@@ -1,6 +1,5 @@
 import 'package:basileapp/db/database_helper.dart';
 import 'package:basileapp/outils/formatDate.dart';
-import 'package:basileapp/outils/syncData.dart';
 import 'package:flutter/material.dart';
 
 class AgentDashboardTab extends StatefulWidget {
@@ -24,7 +23,6 @@ class AgentDashboardTab extends StatefulWidget {
 class _AgentDashboardTabState extends State<AgentDashboardTab> {
   DatabaseHelper dbHelper = DatabaseHelper();
   Formatdate formatDate = Formatdate();
-  SyncData syncData = SyncData();
   
   @override
   Widget build(BuildContext context) {
@@ -40,21 +38,13 @@ class _AgentDashboardTabState extends State<AgentDashboardTab> {
             child: Column(
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
                       "${widget.agentName} ${widget.agentSurname}",
                       style: const TextStyle(
                           fontSize: 25, fontWeight: FontWeight.bold),
                     ),
-                    IconButton(
-                    onPressed: () async {
-                      await syncData.fetchAndSyncTaxes();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Taxes synchronisées !')),
-                      );
-                    },
-                    icon: const Icon(Icons.sync))
                   ],
                 ),
                 const SizedBox(

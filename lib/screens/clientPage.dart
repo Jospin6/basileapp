@@ -71,55 +71,47 @@ class _ClientPageState extends State<ClientPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          leading: IconButton(
-              onPressed: () => Navigator.pop(context),
+        leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.white,
+            )),
+        backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
+        title: const Text(
+          "Client Page",
+          style: TextStyle(color: Colors.white),
+        ),
+        actions: [
+          IconButton(
+              onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const NewClientPage(),
+                    ),
+                  ),
               icon: const Icon(
-                Icons.arrow_back_ios,
+                Icons.add,
                 color: Colors.white,
+                size: 30,
               )),
-          backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
-          title: const Text(
-            "Client Page",
-            style: TextStyle(color: Colors.white),
-          )),
+          if (isConnect)
+            IconButton(
+                onPressed: () async {
+                  await syncData.synchronizeData();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Synchronisation terminée !')),
+                  );
+                },
+                icon: const Icon(
+                  Icons.sync,
+                  color: Colors.white,
+                  size: 30,
+                ))
+        ],
+      ),
       body: Column(
         children: [
-          Container(
-            margin: const EdgeInsets.all(10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const NewClientPage(),
-                      ),
-                    );
-                  },
-                  style: TextButton.styleFrom(
-                    backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
-                  ),
-                  child: const Text(
-                    "Add Client",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                if (isConnect)
-                  IconButton(
-                      onPressed: () async {
-                        await syncData.synchronizeData();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Synchronisation terminée !')),
-                        );
-                      },
-                      icon: const Icon(Icons.sync))
-              ],
-            ),
-          ),
-          const SizedBox(height: 10),
           Expanded(
             child: ListView.builder(
               itemCount: _clients.length,

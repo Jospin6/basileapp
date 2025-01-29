@@ -1,3 +1,4 @@
+import 'package:basileapp/screens/zonesPage.dart';
 import 'package:basileapp/services/firebaseServices.dart';
 import 'package:flutter/material.dart';
 
@@ -10,8 +11,23 @@ class CardAddZoneWidget extends StatefulWidget {
 
 class _CardAddZoneWidgetState extends State<CardAddZoneWidget> {
   FirebaseServices firebaseServices = FirebaseServices();
+  bool _isLoading = false;
+
+  Future<void> _handleClick() async {
+    setState(() {
+      _isLoading = true; // Affiche le CircularProgressIndicator
+    });
+
+    // Simule une tâche asynchrone (exemple : API call)
+    await Future.delayed(Duration(seconds: 3));
+
+    setState(() {
+      _isLoading = false; // Cache le loader après exécution
+    });
+  }
 
   void _submitZoneForm() async {
+    _handleClick();
     if (_zoneNameController.text.isNotEmpty) {
       String zoneName = _zoneNameController.text;
       firebaseServices.addZone(zoneName);
@@ -22,6 +38,12 @@ class _CardAddZoneWidgetState extends State<CardAddZoneWidget> {
         );
 
         _zoneNameController.clear();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ZonesPage(),
+          ),
+        );
       } catch (e) {
         print("Erreur lors de l'ajout de la zone : $e");
         ScaffoldMessenger.of(context).showSnackBar(
@@ -75,13 +97,18 @@ class _CardAddZoneWidgetState extends State<CardAddZoneWidget> {
             const SizedBox(height: 20),
 
             // Bouton pour soumettre le formulaire de zone
-            ElevatedButton(
-              onPressed: _submitZoneForm,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
-              ),
-              child: const Text("Ajouter la zone", style: TextStyle(color: Colors.white),),
-            ),
+            _isLoading
+                ? const CircularProgressIndicator()
+                : ElevatedButton(
+                    onPressed: _submitZoneForm,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
+                    ),
+                    child: const Text(
+                      "Ajouter la zone",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
           ],
         ),
       ),

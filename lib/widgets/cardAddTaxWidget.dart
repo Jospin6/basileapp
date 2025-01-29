@@ -1,4 +1,5 @@
 import 'package:basileapp/outils/syncData.dart';
+import 'package:basileapp/screens/taxesPage.dart';
 import 'package:basileapp/services/firebaseServices.dart';
 import 'package:flutter/material.dart';
 
@@ -17,11 +18,26 @@ class _CardAddTaxWidgetState extends State<CardAddTaxWidget> {
   final TextEditingController _taxNameController = TextEditingController();
   final TextEditingController _taxAmountController = TextEditingController();
   String? _selectedTaxType;
+  bool _isLoading = false;
+
+  Future<void> _handleClick() async {
+    setState(() {
+      _isLoading = true; // Affiche le CircularProgressIndicator
+    });
+
+    // Simule une tâche asynchrone (exemple : API call)
+    await Future.delayed(Duration(seconds: 3));
+
+    setState(() {
+      _isLoading = false; // Cache le loader après exécution
+    });
+  }
 
   // Types de taxes
   final List<String> _taxTypes = ["Journalier", "Mensuel", "Annuel"];
 
   void _submitTaxForm() async {
+    _handleClick();
     if (_selectedTaxType != null &&
         _taxNameController.text.isNotEmpty &&
         _taxAmountController.text.isNotEmpty) {
@@ -43,6 +59,12 @@ class _CardAddTaxWidgetState extends State<CardAddTaxWidget> {
         setState(() {
           _selectedTaxType = null;
         });
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const TaxesPage(),
+          ),
+        );
       } catch (e) {
         print("Erreur lors de l'ajout de la taxe : $e");
         ScaffoldMessenger.of(context).showSnackBar(
@@ -128,16 +150,18 @@ class _CardAddTaxWidgetState extends State<CardAddTaxWidget> {
             const SizedBox(height: 20),
 
             // Bouton pour soumettre le formulaire de taxe
-            ElevatedButton(
-              onPressed: _submitTaxForm,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
-              ),
-              child: const Text(
-                "Ajouter la taxe",
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
+            _isLoading
+                ? const CircularProgressIndicator()
+                : ElevatedButton(
+                    onPressed: _submitTaxForm,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
+                    ),
+                    child: const Text(
+                      "Ajouter la taxe",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
           ],
         ),
       ),

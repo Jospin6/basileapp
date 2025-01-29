@@ -1,5 +1,6 @@
 import 'package:basileapp/db/database_helper.dart';
 import 'package:basileapp/outils/sharedData.dart';
+import 'package:basileapp/screens/clientPage.dart';
 import 'package:flutter/material.dart';
 
 class NewClientPage extends StatefulWidget {
@@ -21,11 +22,25 @@ class _NewClientPageState extends State<NewClientPage> {
   String? agentID;
   String? zoneName;
   late SharedData sharedData;
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
     loadUserData();
+  }
+
+  Future<void> _handleClick() async {
+    setState(() {
+      _isLoading = true; // Affiche le CircularProgressIndicator
+    });
+
+    // Simule une tâche asynchrone (exemple : API call)
+    await Future.delayed(Duration(seconds: 3));
+
+    setState(() {
+      _isLoading = false; // Cache le loader après exécution
+    });
   }
 
   Future<void> loadUserData() async {
@@ -133,49 +148,62 @@ class _NewClientPageState extends State<NewClientPage> {
                 const SizedBox(height: 20),
                 SizedBox(
                   width: MediaQuery.of(context).size.width,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
-                        // Traitement des données
-                        final clientData = {
-                          "name": _nameController.text,
-                          "postName": _postNameController.text,
-                          "commerce": _commerceController.text,
-                          "address": _addressController.text,
-                          "phone": _phoneController.text,
-                          "zone": zoneName,
-                          "agent":
-                              agentID, // Remplacez par l'ID de l'agent approprié
-                          "created_at": DateTime.now().toIso8601String()
-                        };
-                        print("Client ajouté : $clientData");
+                  child: _isLoading
+                      ? const CircularProgressIndicator(
+                          color: Colors.white,
+                        )
+                      : ElevatedButton(
+                          onPressed: () async {
+                            _handleClick();
+                            if (_formKey.currentState!.validate()) {
+                              // Traitement des données
+                              final clientData = {
+                                "name": _nameController.text,
+                                "postName": _postNameController.text,
+                                "commerce": _commerceController.text,
+                                "address": _addressController.text,
+                                "phone": _phoneController.text,
+                                "zone": zoneName,
+                                "agent":
+                                    agentID, // Remplacez par l'ID de l'agent approprié
+                                "created_at": DateTime.now().toIso8601String()
+                              };
+                              print("Client ajouté : $clientData");
 
-                        // Insérer les données dans la base de données
-                        DatabaseHelper dbHelper = DatabaseHelper();
-                        await dbHelper.insertClient(clientData);
+                              // Insérer les données dans la base de données
+                              DatabaseHelper dbHelper = DatabaseHelper();
+                              await dbHelper.insertClient(clientData);
 
-                        // Nettoyer les champs
-                        _nameController.clear();
-                        _postNameController.clear();
-                        _commerceController.clear();
-                        _addressController.clear();
-                        _phoneController.clear();
+                              // Nettoyer les champs
+                              _nameController.clear();
+                              _postNameController.clear();
+                              _commerceController.clear();
+                              _addressController.clear();
+                              _phoneController.clear();
 
-                        // Afficher un message de succès ou rediriger si nécessaire
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text("Client ajouté avec succès")),
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
-                    ),
-                    child: const Text(
-                      "Enregistrer",
-                      style: TextStyle(color: Colors.white, fontSize: 18),
-                    ),
-                  ),
+                              // Afficher un message de succès ou rediriger si nécessaire
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text("Client ajouté avec succès")),
+                              );
+
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ClientPage(),
+                                ),
+                              );
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color.fromRGBO(173, 104, 0, 1),
+                          ),
+                          child: const Text(
+                            "Enregistrer",
+                            style: TextStyle(color: Colors.white, fontSize: 18),
+                          ),
+                        ),
                 ),
               ],
             ),

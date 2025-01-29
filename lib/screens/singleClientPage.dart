@@ -24,6 +24,7 @@ class _SingleClientPageState extends State<SingleClientPage> {
   String? agentZone;
   double clientPaiedSomme = 0;
   double clientDept = 0;
+  bool _isLoading = false;
 
   final pdfPrinter = PdfPrinter();
 
@@ -45,6 +46,19 @@ class _SingleClientPageState extends State<SingleClientPage> {
   @override
   void dispose() {
     super.dispose();
+  }
+
+  Future<void> _handleClick() async {
+    setState(() {
+      _isLoading = true; // Affiche le CircularProgressIndicator
+    });
+
+    // Simule une tâche asynchrone (exemple : API call)
+    await Future.delayed(Duration(seconds: 3));
+
+    setState(() {
+      _isLoading = false; // Cache le loader après exécution
+    });
   }
 
   Future<void> fetchTotPaiedClient() async {
@@ -115,37 +129,40 @@ class _SingleClientPageState extends State<SingleClientPage> {
               },
               child: const Text("Annuler"),
             ),
-            ElevatedButton(
-              onPressed: () async {
-                final enteredAmount =
-                    double.tryParse(_updateAmountController.text);
+            _isLoading
+                ? const CircularProgressIndicator()
+                : ElevatedButton(
+                    onPressed: () async {
+                      _handleClick();
+                      final enteredAmount =
+                          double.tryParse(_updateAmountController.text);
 
-                if (enteredAmount != null) {
-                  final newAmountRecu = amountRecu + enteredAmount;
+                      if (enteredAmount != null) {
+                        final newAmountRecu = amountRecu + enteredAmount;
 
-                  await dbHelper.updatePayment(idTaxe, {
-                    "amount_recu": newAmountRecu,
-                  });
+                        await dbHelper.updatePayment(idTaxe, {
+                          "amount_recu": newAmountRecu,
+                        });
 
-                  Navigator.pop(context);
+                        Navigator.pop(context);
 
-                  setState(() {});
+                        setState(() {});
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Paiement mis à jour avec succès"),
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Paiement mis à jour avec succès"),
+                          ),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
                     ),
-                  );
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
-              ),
-              child: const Text(
-                "Mettre à jour",
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
+                    child: const Text(
+                      "Mettre à jour",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
           ],
         );
       },
@@ -417,8 +434,7 @@ class _SingleClientPageState extends State<SingleClientPage> {
                   ),
                   title: Text(
                     '${taxInfo['name']}',
-                    style: const TextStyle(
-                        fontSize: 16),
+                    style: const TextStyle(fontSize: 16),
                   ),
                 );
               }),

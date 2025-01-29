@@ -6,6 +6,7 @@ import 'package:basileapp/screens/clientPage.dart';
 import 'package:basileapp/screens/connexionPage.dart';
 import 'package:basileapp/screens/settingsPage.dart';
 import 'package:basileapp/screens/singleAgentPage.dart';
+import 'package:basileapp/screens/taxesPage.dart';
 import 'package:basileapp/widgets/adminDashboard.dart';
 
 import 'package:flutter/material.dart';
@@ -206,6 +207,20 @@ class _HomepageState extends State<Homepage> {
                     );
                   },
                 ),
+              ListTile(
+                leading: const Icon(Icons.attach_money),
+                title: const Text('Taxes'),
+                onTap: () {
+                  Navigator.pop(context); // Ferme la Drawer
+                  // Ajoutez une action ici
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const TaxesPage(),
+                    ),
+                  );
+                },
+              ),
               const Spacer(),
               const Divider(),
               ListTile(
@@ -250,8 +265,14 @@ class _HomepageState extends State<Homepage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("$agentName $agentSurname", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-                        Text("Rôle $agentRole", style: const TextStyle(fontWeight: FontWeight.w500)),
+                        Text(
+                          "$agentName $agentSurname",
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        Text("Rôle $agentRole",
+                            style:
+                                const TextStyle(fontWeight: FontWeight.w500)),
                       ],
                     ),
                   ),
@@ -261,7 +282,8 @@ class _HomepageState extends State<Homepage> {
                       padding: const EdgeInsets.all(10),
                       margin: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                       width: MediaQuery.of(context).size.width,
                       height: 200,
                       child: Column(
@@ -274,11 +296,13 @@ class _HomepageState extends State<Homepage> {
                               _dashboardTile("$agentZone", null),
                             ],
                           ),
-                          const SizedBox(height: 20,),
+                          const SizedBox(
+                            height: 20,
+                          ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              _dashboardTile("Recolte du jour",
+                              _dashboardTile("Montant récolté",
                                   "${dailyAmount.toString()} \$"),
                               _dashboardTile(
                                   "Dette Totale", "${totalDebt.toString()} \$"),
@@ -312,7 +336,7 @@ class _HomepageState extends State<Homepage> {
                           itemCount: payments.length,
                           itemBuilder: (context, index) {
                             final payment = payments[index];
-                          
+
                             return ListTile(
                               title: Text(
                                   'Montant: ${payment['amount_recu']} \$ | Taxe: ${payment['taxe_name']}'),

@@ -21,6 +21,7 @@ class _NewAgentPageState extends State<NewAgentPage> {
   String _defaultPassword = "12345678"; // Mot de passe par défaut
   String? _selectedZone;
   String? _selectedRole;
+  bool _isLoading = false;
 
   String? agentID;
   String? numTeleAdmin;
@@ -38,6 +39,19 @@ class _NewAgentPageState extends State<NewAgentPage> {
     super.initState();
     _loadZones();
     loadUserData();
+  }
+
+  Future<void> _handleClick() async {
+    setState(() {
+      _isLoading = true; // Affiche le CircularProgressIndicator
+    });
+
+    // Simule une tâche asynchrone (exemple : API call)
+    await Future.delayed(Duration(seconds: 3));
+
+    setState(() {
+      _isLoading = false; // Cache le loader après exécution
+    });
   }
 
   Future<void> loadUserData() async {
@@ -64,6 +78,7 @@ class _NewAgentPageState extends State<NewAgentPage> {
   }
 
   void _submitForm() async {
+    _handleClick();
     if (_formKey.currentState!.validate()) {
       final agentData = {
         "name": _nameController.text,
@@ -236,16 +251,18 @@ class _NewAgentPageState extends State<NewAgentPage> {
               const SizedBox(height: 20),
 
               // Bouton pour soumettre le formulaire
-              ElevatedButton(
-                onPressed: _submitForm,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
-                ),
-                child: const Text(
-                  "Ajouter l'agent",
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
+              _isLoading
+                  ? const CircularProgressIndicator()
+                  : ElevatedButton(
+                      onPressed: _submitForm,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
+                      ),
+                      child: const Text(
+                        "Ajouter l'agent",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
             ],
           ),
         ),
