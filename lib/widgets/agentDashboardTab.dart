@@ -101,7 +101,7 @@ class _AgentDashboardTabState extends State<AgentDashboardTab> {
 
                   return ListTile(
                     title: Text(
-                        'Montant: ${payment['amount_recu']} fc | Taxe: ${payment['taxe_name']}'),
+                        'Montant: ${payment['amount_recu']} \$ | Taxe: ${payment['taxe_name']}'),
                     subtitle: Text(
                         'Client: ${payment['client_name']}\nDate: ${formatDate.formatCreatedAt(payment['created_at'])}'),
                     trailing: payment['amount_recu'] < payment['amount_tot']

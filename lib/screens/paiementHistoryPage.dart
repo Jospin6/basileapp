@@ -68,7 +68,7 @@ class _PaiementHistoryPageState extends State<PaiementHistoryPage> {
             itemBuilder: (context, index) {
               final payment = paymentHistory[index];
               return ListTile(
-                title: Text('Montant: ${payment['amount_recu']} fc'),
+                title: Text('Montant: ${payment['amount_recu']} \$'),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

@@ -237,9 +237,9 @@ class _SingleClientPageState extends State<SingleClientPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           _dashboardTile("Total Paiement",
-                              '${clientPaiedSomme.toString()} fc'),
+                              '${clientPaiedSomme.toString()} \$'),
                           _dashboardTile(
-                              "Total Dette", '${clientDept.toString()} fc'),
+                              "Total Dette", '${clientDept.toString()} \$'),
                         ],
                       ),
                     ),
@@ -309,7 +309,7 @@ class _SingleClientPageState extends State<SingleClientPage> {
 
                       return ListTile(
                         title: Text(
-                          'Montant: ${payment['amount_recu']} fc Taxe: ${payment['taxe_name']}',
+                          'Montant: ${payment['amount_recu']} \$ Taxe: ${payment['taxe_name']}',
                         ),
                         subtitle: Text(
                           formatDate.formatCreatedAt(payment['created_at']),

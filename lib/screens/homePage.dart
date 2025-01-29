@@ -37,6 +37,7 @@ class _HomepageState extends State<Homepage> {
     loadUserData();
     fetchClientCount();
     fetchDailyAmount();
+    fetchDebts();
   }
 
   Future<void> loadUserData() async {
@@ -97,7 +98,7 @@ class _HomepageState extends State<Homepage> {
         key: _scaffoldKey,
         appBar: AppBar(
           title: const Text(
-            'Basile',
+            'Chefferie de Basile',
             style: TextStyle(color: Colors.white),
           ),
           backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
@@ -278,9 +279,9 @@ class _HomepageState extends State<Homepage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               _dashboardTile("Recolte du jour",
-                                  "${dailyAmount.toString()} fc"),
+                                  "${dailyAmount.toString()} \$"),
                               _dashboardTile(
-                                  "Dette Totale", "${totalDebt.toString()} fc"),
+                                  "Dette Totale", "${totalDebt.toString()} \$"),
                             ],
                           )
                         ],
@@ -314,7 +315,7 @@ class _HomepageState extends State<Homepage> {
                           
                             return ListTile(
                               title: Text(
-                                  'Montant: ${payment['amount_recu']} fc | Taxe: ${payment['taxe_name']}'),
+                                  'Montant: ${payment['amount_recu']} \$ | Taxe: ${payment['taxe_name']}'),
                               subtitle: Text(
                                   'Client: ${payment['client_name']}\nDate: ${formatDate.formatCreatedAt(payment['created_at'])}'),
                               trailing: payment['amount_recu'] <

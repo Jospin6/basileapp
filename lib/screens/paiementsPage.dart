@@ -25,7 +25,7 @@ class _PaiementsPageState extends State<PaiementsPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(
-            "Payer le reste du: $amountRecu fc reçu",
+            "Payer le reste du: $amountRecu \$ reçu",
             style: const TextStyle(fontSize: 16),
           ),
           content: TextFormField(
@@ -130,7 +130,7 @@ class _PaiementsPageState extends State<PaiementsPage> {
               itemBuilder: (context, index) {
                 final payment = payments[index];
                 return ListTile(
-                  title: Text('Montant: ${payment['amount_recu']} fc'),
+                  title: Text('Montant: ${payment['amount_recu']} \$'),
                   subtitle: Text(
                     'Client: ${payment['client_name']}, Taxe: ${payment['tax_name']}, ${formatDate.formatCreatedAt(payment['created_at'])}',
                   ),
@@ -147,7 +147,7 @@ class _PaiementsPageState extends State<PaiementsPage> {
                             )
                           : const Icon(Icons.check, color: Colors.green),
                       if (payment['amount_recu'] >= payment['amount_tot'])
-                        Text('Total: ${payment['amount_tot']} fc')
+                        Text('Total: ${payment['amount_tot']} \$')
                     ],
                   ),
                 );

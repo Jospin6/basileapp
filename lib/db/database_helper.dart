@@ -491,19 +491,11 @@ class DatabaseHelper {
   Future<double> getDailyAmount() async {
     final db = await database;
     try {
-      // Obtenir la date du jour actuel (à minuit)
-      final today = DateTime.now();
-      final todayStart = DateTime(today.year, today.month, today.day)
-          .toIso8601String()
-          .split('T')[0]; // Garde uniquement la partie date
-      final todayEnd = '$todayStart 23:59:59'; // Fin de journée au format ISO
-
       // Exécuter la requête SQL pour la somme
       final result = await db.rawQuery('''
       SELECT SUM(amount_recu) AS total 
       FROM paiements_history 
-      WHERE created_at >= ? AND created_at <= ?
-    ''', [todayStart, todayEnd]);
+    ''');
 
       // Retourner la somme ou 0 si aucune donnée
       if (result.isNotEmpty && result[0]['total'] != null) {

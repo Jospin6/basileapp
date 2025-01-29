@@ -36,7 +36,7 @@ class _AgentHistoryTabState extends State<AgentHistoryTab> {
             final payment = paymentHistory[index];
             return ListTile(
               title: Text(
-                'Montant: ${payment['amount_recu']} fc',
+                'Montant: ${payment['amount_recu']} \$',
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               subtitle: Column(
@@ -44,7 +44,7 @@ class _AgentHistoryTabState extends State<AgentHistoryTab> {
                 children: [
                   Text('Client: ${payment['client_name']}',
                       style: const TextStyle(fontWeight: FontWeight.bold)),
-                  Text('Taxe: ${payment['tax_amount']} fc'),
+                  Text('Taxe: ${payment['tax_amount']} \$'),
                   Text(
                       'Date: ${formatDate.formatCreatedAt(payment['created_at'])}'),
                 ],
