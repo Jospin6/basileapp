@@ -67,11 +67,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Tableau de Bord Administrateur"),
-      ),
-      body: Padding(
+    return Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
@@ -139,7 +135,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 }

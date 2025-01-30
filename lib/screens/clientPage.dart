@@ -95,7 +95,7 @@ class _ClientPageState extends State<ClientPage> {
                 color: Colors.white,
                 size: 30,
               )),
-          if (isConnect)
+          // if (isConnect)
             IconButton(
                 onPressed: () async {
                   await syncData.synchronizeData();
