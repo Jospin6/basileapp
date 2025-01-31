@@ -96,23 +96,26 @@ class _AgentHistoryTabState extends State<AgentHistoryTab> {
                   itemCount: paymentHistory.length,
                   itemBuilder: (context, index) {
                     final payment = paymentHistory[index];
-                    return ListTile(
-                      title: Text(
-                        '💰 Montant: ${payment['amount_recu']} \$',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                    return Card(
+                      elevation: 3,
+                      child: ListTile(
+                        title: Text(
+                          '💰 Montant: ${payment['amount_recu']} \$',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('👤 ${payment['client_name']}',
+                                style:
+                                    const TextStyle(fontWeight: FontWeight.bold)),
+                            Text('💰 Taxe: ${payment['tax_amount']} \$'),
+                            Text(
+                                '📅 ${formatDate.formatCreatedAt(payment['created_at'])}'),
+                          ],
+                        ),
+                        isThreeLine: true,
                       ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('👤 ${payment['client_name']}',
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold)),
-                          Text('💰 Taxe: ${payment['tax_amount']} \$'),
-                          Text(
-                              '📅 ${formatDate.formatCreatedAt(payment['created_at'])}'),
-                        ],
-                      ),
-                      isThreeLine: true,
                     );
                   },
                 );

@@ -129,26 +129,29 @@ class _PaiementsPageState extends State<PaiementsPage> {
               itemCount: payments.length,
               itemBuilder: (context, index) {
                 final payment = payments[index];
-                return ListTile(
-                  title: Text('💰 Montant: ${payment['amount_recu']} \$'),
-                  subtitle: Text(
-                    '👤 ${payment['client_name']},\n📍 Taxe: ${payment['tax_name']},\n📅 ${formatDate.formatCreatedAt(payment['created_at'])}',
-                  ),
-                  trailing: Column(
-                    children: [
-                      payment['amount_recu'] < payment['amount_tot']
-                          ? IconButton(
-                              onPressed: () {
-                                _showUpdatePaymentDialog(context,
-                                    payment['amount_recu'], payment['id']);
-                              },
-                              icon:
-                                  const Icon(Icons.payment, color: Colors.red),
-                            )
-                          : const Icon(Icons.check, color: Colors.green),
-                      if (payment['amount_recu'] >= payment['amount_tot'])
-                        Text('Total: ${payment['amount_tot']} \$')
-                    ],
+                return Card(
+                  elevation: 3,
+                  child: ListTile(
+                    title: Text('💰 Montant: ${payment['amount_recu']} \$'),
+                    subtitle: Text(
+                      '👤 ${payment['client_name']},\n📍 Taxe: ${payment['tax_name']},\n📅 ${formatDate.formatCreatedAt(payment['created_at'])}',
+                    ),
+                    trailing: Column(
+                      children: [
+                        payment['amount_recu'] < payment['amount_tot']
+                            ? IconButton(
+                                onPressed: () {
+                                  _showUpdatePaymentDialog(context,
+                                      payment['amount_recu'], payment['id']);
+                                },
+                                icon:
+                                    const Icon(Icons.payment, color: Colors.red),
+                              )
+                            : const Icon(Icons.check, color: Colors.green),
+                        if (payment['amount_recu'] >= payment['amount_tot'])
+                          Text('Total: ${payment['amount_tot']} \$')
+                      ],
+                    ),
                   ),
                 );
               },

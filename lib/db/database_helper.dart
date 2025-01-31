@@ -435,7 +435,12 @@ class DatabaseHelper {
 
   Future<List<Map<String, dynamic>>> getAllPaymentsHistory() async {
     final db = await database;
-    return await db.query('paiements_history');
+    return await db.rawQuery('''
+      SELECT paiements_history.*, clients.name AS client_name, clients.postName AS client_postName, taxes.amount AS tax_amount, taxes.name AS tax_name   
+      FROM paiements_history  
+      LEFT JOIN clients ON paiements_history.id_client = clients.id  
+      LEFT JOIN taxes ON paiements_history.id_taxe = taxes.id  
+    ''');
   }
 
   // Fonction pour récupérer tout l'historique des paiements d'un client

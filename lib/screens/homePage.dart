@@ -208,8 +208,7 @@ class _HomepageState extends State<Homepage> {
                     );
                   },
                 ),
-
-                if (agentRole == "Admin")
+              if (agentRole == "Admin")
                 ListTile(
                   leading: const Icon(Icons.area_chart_outlined),
                   title: const Text('Zones'),
@@ -320,14 +319,31 @@ class _HomepageState extends State<Homepage> {
                             children: [
                               _dashboardTile("💰 Montant récolté",
                                   "${dailyAmount.toString()} \$"),
-                              _dashboardTile(
-                                  "📉 Dette Totale", "${totalDebt.toString()} \$"),
+                              _dashboardTile("📉 Dette Totale",
+                                  "${totalDebt.toString()} \$"),
                             ],
                           )
                         ],
                       ),
                     ),
                   ),
+                  const SizedBox(height: 20),
+
+                  // 🔹 Affichage des paiements récents
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.only(left: 10, right: 10),
+                        child: const Text(
+                          "📜 10 derniers paiements :",
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
                   Expanded(
                     child: FutureBuilder<List<Map<String, dynamic>>>(
                       future: dbHelper.fetchLatestClientsPayments(),
@@ -342,8 +358,7 @@ class _HomepageState extends State<Homepage> {
                         } else if (!snapshot.hasData ||
                             snapshot.data!.isEmpty) {
                           return const Center(
-                              child: Text(
-                                  '⚠️ Aucun paiement trouvé.'));
+                              child: Text('⚠️ Aucun paiement trouvé.'));
                         }
 
                         final payments = snapshot.data!;

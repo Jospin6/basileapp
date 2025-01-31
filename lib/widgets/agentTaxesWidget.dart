@@ -30,17 +30,20 @@ class _AgentTaxesWidgetState extends State<AgentTaxesWidget> {
           itemCount: taxes.length,
           itemBuilder: (context, index) {
             final tax = taxes[index];
-            return ListTile(
-              title: Text("📌 ${tax['name']}"),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("📜 Type : ${tax['type']}"),
-                  Text("💰 Montant : ${tax['amount']} \$"),
-                ],
+            return Card(
+              elevation: 3,
+              child: ListTile(
+                title: Text("${tax['name']}"),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Type : ${tax['type']}"),
+                    Text("Montant : ${tax['amount']} \$"),
+                  ],
+                ),
+                isThreeLine: true,
+                leading: const Icon(Icons.monetization_on, color: Colors.green,size: 40,),
               ),
-              isThreeLine: true,
-              leading: const Icon(Icons.monetization_on, color: Colors.green,size: 40,),
             );
           },
         );

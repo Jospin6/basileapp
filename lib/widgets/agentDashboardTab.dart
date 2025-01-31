@@ -105,49 +105,68 @@ class _AgentDashboardTabState extends State<AgentDashboardTab> {
             },
           ),
         if (widget.agentRole != "Admin")
-          Card(
-            elevation: 4,
-            child: Container(
-              margin: const EdgeInsets.all(10),
-              width: MediaQuery.of(context).size.width,
-              height: 100,
-              decoration:
-                  BoxDecoration(borderRadius: BorderRadius.circular(15)),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        "👤 ${widget.agentName} ${widget.agentSurname}",
-                        style: const TextStyle(
-                            fontSize: 25, fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "📍 Zone de ${widget.agentZone}",
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                      Text(
-                        "🆔 Rôle ${widget.agentRole}",
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                    ],
-                  ),
-                ],
+          Container(
+            margin: const EdgeInsets.all(10),
+            width: MediaQuery.of(context).size.width,
+            child: Card(
+              elevation: 4,
+              child: Container(
+                margin: const EdgeInsets.all(10),
+                width: MediaQuery.of(context).size.width,
+                height: 100,
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(15)),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          "👤 ${widget.agentName} ${widget.agentSurname}",
+                          style: const TextStyle(
+                              fontSize: 25, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "📍 Zone de ${widget.agentZone}",
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                        Text(
+                          "🆔 Rôle ${widget.agentRole}",
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
         const SizedBox(
           height: 10,
         ),
+
+        // 🔹 Affichage des paiements récents
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.only(left: 10, right: 10),
+              child: const Text(
+                "📜 10 derniers paiements :",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
         if (widget.agentRole == "Admin")
           Expanded(
               child: FutureBuilder<List<Map<String, dynamic>>>(
@@ -203,18 +222,24 @@ class _AgentDashboardTabState extends State<AgentDashboardTab> {
                   itemBuilder: (context, index) {
                     final payment = payments[index];
 
-                    return ListTile(
-                      title: Text(
-                          '💰 Montant: ${payment['amount_recu']} \$ | Taxe: ${payment['taxe_name']}'),
-                      subtitle: Text(
-                          '👤 ${payment['client_name']}\n📅: ${formatDate.formatCreatedAt(payment['created_at'])}'),
-                      trailing: payment['amount_recu'] < payment['amount_tot']
-                          ? const Icon(Icons.warning,
-                              color: Colors
-                                  .red) // Icône d'avertissement si paiement incomplet
-                          : const Icon(Icons.check,
-                              color: Colors
-                                  .green), // Icône de validation si paiement complet
+                    return Container(
+                      margin: const EdgeInsets.only(left: 10, right: 10),
+                      child: Card(
+                        elevation: 3,
+                        child: ListTile(
+                          title: Text(
+                              '💰 Montant: ${payment['amount_recu']} \$ | Taxe: ${payment['taxe_name']}'),
+                          subtitle: Text(
+                              '👤 ${payment['client_name']}\n📅: ${formatDate.formatCreatedAt(payment['created_at'])}'),
+                          trailing: payment['amount_recu'] < payment['amount_tot']
+                              ? const Icon(Icons.warning,
+                                  color: Colors
+                                      .red) // Icône d'avertissement si paiement incomplet
+                              : const Icon(Icons.check,
+                                  color: Colors
+                                      .green), // Icône de validation si paiement complet
+                        ),
+                      ),
                     );
                   },
                 );
