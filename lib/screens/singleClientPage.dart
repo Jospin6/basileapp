@@ -219,7 +219,7 @@ class _SingleClientPageState extends State<SingleClientPage> {
                         children: [
                           if (client != null)
                             Text(
-                              '${client!['name']} ${client!['postName']}',
+                              '👤 ${client!['name']} ${client!['postName']}',
                               style: const TextStyle(
                                   fontSize: 25, fontWeight: FontWeight.bold),
                             ),
@@ -234,13 +234,13 @@ class _SingleClientPageState extends State<SingleClientPage> {
                         children: [
                           if (client != null)
                             Text(
-                              '${client!['commerce']}',
+                              '📍 ${client!['commerce']}',
                               style: const TextStyle(
                                   fontSize: 15, fontWeight: FontWeight.bold),
                             ),
                           if (client != null)
                             Text(
-                              '${client!['phone']}',
+                              '📞 ${client!['phone']}',
                               style: const TextStyle(
                                 fontSize: 15,
                               ),
@@ -253,10 +253,10 @@ class _SingleClientPageState extends State<SingleClientPage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          _dashboardTile("Total Paiement",
+                          _dashboardTile("💰 Total Paiement",
                               '${clientPaiedSomme.toString()} \$'),
                           _dashboardTile(
-                              "Total Dette", '${clientDept.toString()} \$'),
+                              "📉 Total Dette", '${clientDept.toString()} \$'),
                         ],
                       ),
                     ),
@@ -324,23 +324,26 @@ class _SingleClientPageState extends State<SingleClientPage> {
                     itemBuilder: (context, index) {
                       final payment = payments[index];
 
-                      return ListTile(
-                        title: Text(
-                          'Montant: ${payment['amount_recu']} \$ Taxe: ${payment['taxe_name']}',
+                      return Card(
+                        elevation: 3,
+                        child: ListTile(
+                          title: Text(
+                            '💰 Montant: ${payment['amount_recu']} \$ 📌 Taxe: ${payment['taxe_name']}',
+                          ),
+                          subtitle: Text(
+                            "📅 ${formatDate.formatCreatedAt(payment['created_at'])}",
+                          ),
+                          trailing: payment['amount_recu'] < payment['amount_tot']
+                              ? IconButton(
+                                  onPressed: () {
+                                    _showUpdatePaymentDialog(context,
+                                        payment['amount_recu'], payment['id']);
+                                  },
+                                  icon: const Icon(Icons.payment,
+                                      color: Colors.red),
+                                )
+                              : const Icon(Icons.check, color: Colors.green),
                         ),
-                        subtitle: Text(
-                          formatDate.formatCreatedAt(payment['created_at']),
-                        ),
-                        trailing: payment['amount_recu'] < payment['amount_tot']
-                            ? IconButton(
-                                onPressed: () {
-                                  _showUpdatePaymentDialog(context,
-                                      payment['amount_recu'], payment['id']);
-                                },
-                                icon: const Icon(Icons.payment,
-                                    color: Colors.red),
-                              )
-                            : const Icon(Icons.check, color: Colors.green),
                       );
                     },
                   );

@@ -21,7 +21,7 @@ class _AgentTaxesWidgetState extends State<AgentTaxesWidget> {
         } else if (snapshot.hasError) {
           return Center(child: Text("Erreur : ${snapshot.error}"));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text("Aucune taxe trouvée."));
+          return const Center(child: Text("⚠️ Aucune taxe trouvée."));
         }
 
         final taxes = snapshot.data!;
@@ -31,12 +31,12 @@ class _AgentTaxesWidgetState extends State<AgentTaxesWidget> {
           itemBuilder: (context, index) {
             final tax = taxes[index];
             return ListTile(
-              title: Text("Nom : ${tax['name']}"),
+              title: Text("📌 ${tax['name']}"),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Type : ${tax['type']}"),
-                  Text("Montant : ${tax['amount']} \$"),
+                  Text("📜 Type : ${tax['type']}"),
+                  Text("💰 Montant : ${tax['amount']} \$"),
                 ],
               ),
               isThreeLine: true,

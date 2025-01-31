@@ -105,7 +105,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
             // 🔹 Affichage des statistiques
             SizedBox(
               width: MediaQuery.of(context).size.width,
-              height: 200,
               child: Card(
                 elevation: 4,
                 child: Container(
@@ -113,17 +112,17 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Nombre d'utilisateurs : $userCount",
+                      Text("👤 Nombre d'utilisateurs : $userCount",
                           style: const TextStyle(fontSize: 18)),
                       const SizedBox(height: 8),
-                      Text("Nombre de clients : $clientCount",
+                      Text("🏠 Nombre de clients : $clientCount",
                           style: const TextStyle(fontSize: 18)),
                       const SizedBox(height: 8),
                       Text(
-                          "Montant total reçu : \$${totalReceived.toStringAsFixed(2)}",
+                          "💰 Montant total reçu : \$${totalReceived.toStringAsFixed(2)}",
                           style: const TextStyle(fontSize: 18)),
                       const SizedBox(height: 8),
-                      Text("Dette totale : \$${totalDebt.toStringAsFixed(2)}",
+                      Text("📉 Dette totale : \$${totalDebt.toStringAsFixed(2)}",
                           style: const TextStyle(fontSize: 18)),
                     ],
                   ),
@@ -135,7 +134,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
             // 🔹 Affichage des paiements récents
             const Text(
-              "10 dernières entrées de paiements :",
+              "📜 10 derniers paiements :",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
@@ -148,9 +147,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 return Card(
                   elevation: 2,
                   child: ListTile(
-                    title: Text("${payment['id_client']}"),
+                    title: Text("👤 ${payment['id_client']}"),
                     subtitle: Text(
-                        "Montant: \$${payment['amount_recu']}\n ${formatDate.formatCreatedAt(payment['created_at'])}"),
+                        "💰 Montant: \$${payment['amount_recu']}\n📅 ${formatDate.formatCreatedAt(payment['created_at'])}"),
                   ),
                 );
               },

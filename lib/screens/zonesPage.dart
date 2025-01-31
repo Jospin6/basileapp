@@ -78,6 +78,9 @@ class _ZonesPageState extends State<ZonesPage> {
                 return Card(
                   elevation: 4,
                   child: ListTile(
+                    leading: CircleAvatar(
+                      child: Text(zoneName.substring(0, 1).toUpperCase()),
+                    ),
                     title: Text(
                       zoneName,
                       style: const TextStyle(fontWeight: FontWeight.w600),

@@ -33,7 +33,7 @@ class _ClientsZonePageState extends State<ClientsZonePage> {
           } else if (snapshot.hasError) {
             return const Center(child: Text("Erreur lors du chargement des clients"));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text("Aucun client trouvé"));
+            return const Center(child: Text("⚠️ Aucun client trouvé"));
           }
 
           final clients = snapshot.data!;
@@ -42,11 +42,17 @@ class _ClientsZonePageState extends State<ClientsZonePage> {
             itemBuilder: (context, index) {
               final client = clients[index];
               final clientName = client['name'] ?? "Nom inconnu";
-              final clientId = client['id'] ?? "";
+              final clientSurName = client['postName'] ?? "Nom inconnu";
+              // final clientId = client['id'] ?? "";
+              final phone = client['phone'] ?? "phone";
+              final commerce = client['commerce'] ?? "commerce";
 
-              return ListTile(
-                title: Text(clientName),
-                subtitle: Text("ID : $clientId"),
+              return Card(
+                elevation: 3,
+                child: ListTile(
+                  title: Text("$clientName $clientSurName"),
+                  subtitle: Text("$commerce \n $phone"),
+                ),
               );
             },
           );

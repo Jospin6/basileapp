@@ -13,6 +13,7 @@ class TaxesPage extends StatefulWidget {
 
 class _TaxesPageState extends State<TaxesPage> {
   String? agentZone;
+  String? agentRole;
   late SharedData sharedData;
   SyncData syncData = SyncData();
 
@@ -27,6 +28,7 @@ class _TaxesPageState extends State<TaxesPage> {
 
     setState(() {
       agentZone = sharedData.getAgentZone().toString();
+      agentRole = sharedData.getAgentRole().toString();
     });
   }
 
@@ -56,7 +58,7 @@ class _TaxesPageState extends State<TaxesPage> {
               icon: const Icon(Icons.sync, color: Colors.white,))
         ],
       ),
-      body: agentZone == "Admin"
+      body: agentRole == "Admin"
           ? const AdminTaxesWidget()
           : const AgentTaxesWidget(),
     );

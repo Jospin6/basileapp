@@ -32,12 +32,12 @@ class _AdminTaxesWidgetState extends State<AdminTaxesWidget> {
             final tax = taxes[index].data() as Map<String, dynamic>;
 
             return ListTile(
-              title: Text("Nom : ${tax['name']}"),
+              title: Text("📌 ${tax['name']}"),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Type : ${tax['type']}"),
-                  Text("Montant : ${tax['amount']} \$"),
+                  Text("📜 Type : ${tax['type']}"),
+                  Text("💰 Montant : ${tax['amount']} \$"),
                 ],
               ),
               isThreeLine: true,

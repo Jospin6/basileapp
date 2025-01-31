@@ -83,21 +83,21 @@ class _AgentDashboardTabState extends State<AgentDashboardTab> {
                 return Container(
                   margin: const EdgeInsets.only(top: 10, left: 10, right: 10),
                   width: MediaQuery.of(context).size.width,
-                  height: 150,
                   child: Card(
                     elevation: 4,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("👤 Nom : ${userData['name']}",
-                            style: const TextStyle(fontSize: 18)),
-                        Text("📧 Email : ${userData['surname']}",
-                            style: const TextStyle(fontSize: 18)),
-                        Text("📞 Téléphone : ${userData['phone']}",
-                            style: const TextStyle(fontSize: 18)),
-                        Text("📅 Zone : ${userData['zone']}",
-                            style: const TextStyle(fontSize: 18)),
-                      ],
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("👤 ${userData['name']} ${userData['surname']}",
+                              style: const TextStyle(fontSize: 18)),
+                          Text("📞 Téléphone : ${userData['phone']}",
+                              style: const TextStyle(fontSize: 18)),
+                          Text("📅 Zone : ${userData['zone']}",
+                              style: const TextStyle(fontSize: 18)),
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -119,7 +119,7 @@ class _AgentDashboardTabState extends State<AgentDashboardTab> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        "${widget.agentName} ${widget.agentSurname}",
+                        "👤 ${widget.agentName} ${widget.agentSurname}",
                         style: const TextStyle(
                             fontSize: 25, fontWeight: FontWeight.bold),
                       ),
@@ -132,11 +132,11 @@ class _AgentDashboardTabState extends State<AgentDashboardTab> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Zone de ${widget.agentZone}",
+                        "📍 Zone de ${widget.agentZone}",
                         style: const TextStyle(fontSize: 18),
                       ),
                       Text(
-                        "Rôle ${widget.agentRole}",
+                        "🆔 Rôle ${widget.agentRole}",
                         style: const TextStyle(fontSize: 18),
                       ),
                     ],
@@ -171,11 +171,11 @@ class _AgentDashboardTabState extends State<AgentDashboardTab> {
                       margin: const EdgeInsets.symmetric(
                           vertical: 8, horizontal: 16),
                       child: ListTile(
-                        title: Text("${payment['id_client']}"),
+                        title: Text("👤 ${payment['id_client']}"),
                         subtitle: Text(
-                          "Montant : \$${payment['amount_recu']}\n ${formatDate.formatCreatedAt(payment['created_at'])}",
+                          "💰 Montant : \$${payment['amount_recu']}\n📅 ${formatDate.formatCreatedAt(payment['created_at'])}",
                         ),
-                        trailing: Text("Agent : ${payment['id_agent']}"),
+                        trailing: Text("🆔 Agent : ${payment['id_agent']}"),
                       ),
                     );
                   },
@@ -205,9 +205,9 @@ class _AgentDashboardTabState extends State<AgentDashboardTab> {
 
                     return ListTile(
                       title: Text(
-                          'Montant: ${payment['amount_recu']} \$ | Taxe: ${payment['taxe_name']}'),
+                          '💰 Montant: ${payment['amount_recu']} \$ | Taxe: ${payment['taxe_name']}'),
                       subtitle: Text(
-                          'Client: ${payment['client_name']}\nDate: ${formatDate.formatCreatedAt(payment['created_at'])}'),
+                          '👤 ${payment['client_name']}\n📅: ${formatDate.formatCreatedAt(payment['created_at'])}'),
                       trailing: payment['amount_recu'] < payment['amount_tot']
                           ? const Icon(Icons.warning,
                               color: Colors

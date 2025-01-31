@@ -64,11 +64,11 @@ class _AgentHistoryTabState extends State<AgentHistoryTab> {
                       margin: const EdgeInsets.symmetric(
                           vertical: 8, horizontal: 16),
                       child: ListTile(
-                        title: Text("${payment['id_client']}"),
+                        title: Text("👤 ${payment['id_client']}"),
                         subtitle: Text(
-                          "Montant: \$${payment['amount_recu']}\n ${formatDate.formatCreatedAt(payment['created_at'])}",
+                          "💰 Montant: \$${payment['amount_recu']}\n📅 ${formatDate.formatCreatedAt(payment['created_at'])}",
                         ),
-                        trailing: Text("Agent : ${payment['id_agent']}"),
+                        trailing: Text("🆔 Agent : ${payment['id_agent']}"),
                       ),
                     );
                   },
@@ -98,18 +98,18 @@ class _AgentHistoryTabState extends State<AgentHistoryTab> {
                     final payment = paymentHistory[index];
                     return ListTile(
                       title: Text(
-                        'Montant: ${payment['amount_recu']} \$',
+                        '💰 Montant: ${payment['amount_recu']} \$',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Client: ${payment['client_name']}',
+                          Text('👤 ${payment['client_name']}',
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold)),
-                          Text('Taxe: ${payment['tax_amount']} \$'),
+                          Text('💰 Taxe: ${payment['tax_amount']} \$'),
                           Text(
-                              'Date: ${formatDate.formatCreatedAt(payment['created_at'])}'),
+                              '📅 ${formatDate.formatCreatedAt(payment['created_at'])}'),
                         ],
                       ),
                       isThreeLine: true,

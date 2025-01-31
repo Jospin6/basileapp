@@ -117,22 +117,25 @@ class _ClientPageState extends State<ClientPage> {
               itemCount: _clients.length,
               itemBuilder: (context, index) {
                 final client = _clients[index];
-                return ListTile(
-                  leading: CircleAvatar(
-                    child: Text(client['name'].substring(0, 1).toUpperCase()),
+                return Card(
+                  elevation: 3,
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      child: Text(client['name'].substring(0, 1).toUpperCase()),
+                    ),
+                    title: Text('${client['name']} ${client['postName']}'),
+                    subtitle:
+                        Text('${client['commerce']},\n télé: ${client['phone']}'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              SingleClientPage(clientID: client['id']),
+                        ),
+                      );
+                    },
                   ),
-                  title: Text('${client['name']} ${client['postName']}'),
-                  subtitle:
-                      Text('${client['commerce']}, télé: ${client['phone']}'),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            SingleClientPage(clientID: client['id']),
-                      ),
-                    );
-                  },
                 );
               },
             ),

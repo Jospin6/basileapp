@@ -58,7 +58,7 @@ class _PaiementHistoryPageState extends State<PaiementHistoryPage> {
             return Center(child: Text('Erreur: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(
-                child: Text('Aucun historique de paiement trouvé.'));
+                child: Text('⚠️ Aucun historique de paiement trouvé.'));
           }
 
           final paymentHistory = snapshot.data!;
@@ -67,52 +67,55 @@ class _PaiementHistoryPageState extends State<PaiementHistoryPage> {
             itemCount: paymentHistory.length,
             itemBuilder: (context, index) {
               final payment = paymentHistory[index];
-              return ListTile(
-                title: Text('Montant: ${payment['amount_recu']} \$'),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Client: ${payment['client_name']}'),
-                    Text('Taxe: ${payment['tax_amount']}'),
-                    Text('Agent: $agentName'),
-                    Text('Date: ${formatDate.formatCreatedAt(payment['created_at'])}'),
-                  ],
+              return Card(
+                elevation: 3,
+                child: ListTile(
+                  title: Text('💰 Montant: ${payment['amount_recu']} \$'),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('👤 ${payment['client_name']}'),
+                      Text('📍 Taxe: ${payment['tax_amount']}'),
+                      Text('🆔 Agent: $agentName'),
+                      Text('📅 ${formatDate.formatCreatedAt(payment['created_at'])}'),
+                    ],
+                  ),
+                  isThreeLine: true,
+                  trailing: IconButton(
+                      onPressed: () async {
+                        // Récupérer les données du client et taxe
+                        List<Map<String, dynamic>> clientData =
+                            await dbHelper.getClient(widget.clientID);
+                        List<Map<String, dynamic>> taxeData =
+                            await dbHelper.getTax(payment['id_taxe']);
+                        if (clientData.isEmpty || taxeData.isEmpty) {
+                          print(
+                              "Erreur : aucun client ou taxe trouvé avec cet ID.");
+                          return;
+                        }
+                        final client = clientData.first;
+                        final taxe = taxeData.first;
+                
+                        // Impression reçu
+                        try {
+                          await pdfPrinter.printReceipt(
+                            taxData: {
+                              "created_at": DateTime.now().toIso8601String(),
+                              "client_name": client['name'].toString(),
+                              "type_taxe": taxe['type'].toString(),
+                              "taxe_name": taxe['name'].toString(),
+                              "amount_recu": payment['amount_recu'].toString(),
+                            },
+                            agentName: agentName!,
+                            agentSurname: agentSurname!,
+                            agentZone: agentZone!,
+                          );
+                        } catch (e) {
+                          print("Erreur lors de l'envoi du SMS : $e");
+                        }
+                      },
+                      icon: const Icon(Icons.print)),
                 ),
-                isThreeLine: true,
-                trailing: IconButton(
-                    onPressed: () async {
-                      // Récupérer les données du client et taxe
-                      List<Map<String, dynamic>> clientData =
-                          await dbHelper.getClient(widget.clientID);
-                      List<Map<String, dynamic>> taxeData =
-                          await dbHelper.getTax(payment['id_taxe']);
-                      if (clientData.isEmpty || taxeData.isEmpty) {
-                        print(
-                            "Erreur : aucun client ou taxe trouvé avec cet ID.");
-                        return;
-                      }
-                      final client = clientData.first;
-                      final taxe = taxeData.first;
-
-                      // Impression reçu
-                      try {
-                        await pdfPrinter.printReceipt(
-                          taxData: {
-                            "created_at": DateTime.now().toIso8601String(),
-                            "client_name": client['name'].toString(),
-                            "type_taxe": taxe['type'].toString(),
-                            "taxe_name": taxe['name'].toString(),
-                            "amount_recu": payment['amount_recu'].toString(),
-                          },
-                          agentName: agentName!,
-                          agentSurname: agentSurname!,
-                          agentZone: agentZone!,
-                        );
-                      } catch (e) {
-                        print("Erreur lors de l'envoi du SMS : $e");
-                      }
-                    },
-                    icon: const Icon(Icons.print)),
               );
             },
           );

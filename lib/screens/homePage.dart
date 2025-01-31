@@ -283,11 +283,11 @@ class _HomepageState extends State<Homepage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "$agentName $agentSurname",
+                          "👤 $agentName $agentSurname",
                           style: const TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
-                        Text("Rôle $agentRole",
+                        Text("📌 Rôle $agentRole",
                             style:
                                 const TextStyle(fontWeight: FontWeight.w500)),
                       ],
@@ -302,14 +302,13 @@ class _HomepageState extends State<Homepage> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       width: MediaQuery.of(context).size.width,
-                      height: 200,
                       child: Column(
                         children: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               _dashboardTile(
-                                  "Total Clients", clientCount.toString()),
+                                  "👤 Total Clients", clientCount.toString()),
                               _dashboardTile("$agentZone", null),
                             ],
                           ),
@@ -319,10 +318,10 @@ class _HomepageState extends State<Homepage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              _dashboardTile("Montant récolté",
+                              _dashboardTile("💰 Montant récolté",
                                   "${dailyAmount.toString()} \$"),
                               _dashboardTile(
-                                  "Dette Totale", "${totalDebt.toString()} \$"),
+                                  "📉 Dette Totale", "${totalDebt.toString()} \$"),
                             ],
                           )
                         ],
@@ -342,9 +341,9 @@ class _HomepageState extends State<Homepage> {
                               child: Text('Erreur: ${snapshot.error}'));
                         } else if (!snapshot.hasData ||
                             snapshot.data!.isEmpty) {
-                          return Center(
+                          return const Center(
                               child: Text(
-                                  'Aucun paiement trouvé. role $agentRole sur $agentSurname , $agentName , $agentZone , $agentID'));
+                                  '⚠️ Aucun paiement trouvé.'));
                         }
 
                         final payments = snapshot.data!;
@@ -354,19 +353,22 @@ class _HomepageState extends State<Homepage> {
                           itemBuilder: (context, index) {
                             final payment = payments[index];
 
-                            return ListTile(
-                              title: Text(
-                                  'Montant: ${payment['amount_recu']} \$ | Taxe: ${payment['taxe_name']}'),
-                              subtitle: Text(
-                                  'Client: ${payment['client_name']}\nDate: ${formatDate.formatCreatedAt(payment['created_at'])}'),
-                              trailing: payment['amount_recu'] <
-                                      payment['amount_tot']
-                                  ? const Icon(Icons.warning,
-                                      color: Colors
-                                          .red) // Icône d'avertissement si paiement incomplet
-                                  : const Icon(Icons.check,
-                                      color: Colors
-                                          .green), // Icône de validation si paiement complet
+                            return Card(
+                              elevation: 3,
+                              child: ListTile(
+                                title: Text(
+                                    '💰 Montant: ${payment['amount_recu']} \$ | 📍 Taxe: ${payment['taxe_name']}'),
+                                subtitle: Text(
+                                    '👤 ${payment['client_name']}\n📅 ${formatDate.formatCreatedAt(payment['created_at'])}'),
+                                trailing: payment['amount_recu'] <
+                                        payment['amount_tot']
+                                    ? const Icon(Icons.warning,
+                                        color: Colors
+                                            .red) // Icône d'avertissement si paiement incomplet
+                                    : const Icon(Icons.check,
+                                        color: Colors
+                                            .green), // Icône de validation si paiement complet
+                              ),
                             );
                           },
                         );

@@ -130,9 +130,9 @@ class _PaiementsPageState extends State<PaiementsPage> {
               itemBuilder: (context, index) {
                 final payment = payments[index];
                 return ListTile(
-                  title: Text('Montant: ${payment['amount_recu']} \$'),
+                  title: Text('💰 Montant: ${payment['amount_recu']} \$'),
                   subtitle: Text(
-                    'Client: ${payment['client_name']}, Taxe: ${payment['tax_name']}, ${formatDate.formatCreatedAt(payment['created_at'])}',
+                    '👤 ${payment['client_name']},\n📍 Taxe: ${payment['tax_name']},\n📅 ${formatDate.formatCreatedAt(payment['created_at'])}',
                   ),
                   trailing: Column(
                     children: [
