@@ -99,7 +99,7 @@ class _SingleAgentPageState extends State<SingleAgentPage>
               agentSurname: agentSurname!,
               agentZone: agentZone!,
               agentRole: agentRole!),
-          AgentHistoryTab(agentID: widget.agentID),
+          AgentHistoryTab(agentID: widget.agentID, agentRole: agentRole!, ),
         ],
       ),
     );

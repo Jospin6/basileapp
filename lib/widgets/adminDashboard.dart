@@ -1,4 +1,4 @@
-import 'package:basileapp/screens/zonesPage.dart';
+import 'package:basileapp/outils/formatDate.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -11,6 +11,7 @@ class AdminDashboard extends StatefulWidget {
 
 class _AdminDashboardState extends State<AdminDashboard> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  Formatdate formatDate = Formatdate();
 
   int userCount = 0;
   int clientCount = 0;
@@ -96,47 +97,36 @@ class _AdminDashboardState extends State<AdminDashboard> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(10),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ElevatedButton(
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ZonesPage(),
-                    ),
-                  ),
-                  child: const Text("Zones"),
-                ),
-              ],
-            ),
-
             // 🔹 Affichage des statistiques
-            Card(
-              elevation: 4,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Nombre d'utilisateurs : $userCount",
-                        style: const TextStyle(fontSize: 18)),
-                    const SizedBox(height: 8),
-                    Text("Nombre de clients : $clientCount",
-                        style: const TextStyle(fontSize: 18)),
-                    const SizedBox(height: 8),
-                    Text(
-                        "Montant total reçu : \$${totalReceived.toStringAsFixed(2)}",
-                        style: const TextStyle(fontSize: 18)),
-                    const SizedBox(height: 8),
-                    Text("Dette totale : \$${totalDebt.toStringAsFixed(2)}",
-                        style: const TextStyle(fontSize: 18)),
-                  ],
+            SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: 200,
+              child: Card(
+                elevation: 4,
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Nombre d'utilisateurs : $userCount",
+                          style: const TextStyle(fontSize: 18)),
+                      const SizedBox(height: 8),
+                      Text("Nombre de clients : $clientCount",
+                          style: const TextStyle(fontSize: 18)),
+                      const SizedBox(height: 8),
+                      Text(
+                          "Montant total reçu : \$${totalReceived.toStringAsFixed(2)}",
+                          style: const TextStyle(fontSize: 18)),
+                      const SizedBox(height: 8),
+                      Text("Dette totale : \$${totalDebt.toStringAsFixed(2)}",
+                          style: const TextStyle(fontSize: 18)),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -158,9 +148,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 return Card(
                   elevation: 2,
                   child: ListTile(
-                    title: Text("Client ID : ${payment['id_client']}"),
+                    title: Text("${payment['id_client']}"),
                     subtitle: Text(
-                        "Montant reçu : \$${payment['amount_recu']}\nDate : ${payment['created_at']}"),
+                        "Montant: \$${payment['amount_recu']}\n ${formatDate.formatCreatedAt(payment['created_at'])}"),
                   ),
                 );
               },

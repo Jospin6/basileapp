@@ -47,8 +47,17 @@ class _AgentsPageState extends State<AgentsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.white,
+            )),
         backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
-        title: const Text("Liste des agents", style: TextStyle(color: Colors.white),),
+        title: const Text(
+          "Les agents",
+          style: TextStyle(color: Colors.white),
+        ),
         actions: [
           IconButton(
               onPressed: () {
@@ -58,8 +67,12 @@ class _AgentsPageState extends State<AgentsPage> {
                     builder: (context) => const NewAgentPage(),
                   ),
                 );
-              }, 
-              icon: const Icon(Icons.add_circle_outline))
+              },
+              icon: const Icon(
+                Icons.add_circle_outline,
+                color: Colors.white,
+                size: 30,
+              ))
         ],
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(

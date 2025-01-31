@@ -1,3 +1,4 @@
+import 'package:basileapp/screens/settingsPage.dart';
 import 'package:basileapp/screens/singleZonePage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -39,6 +40,22 @@ class _ZonesPageState extends State<ZonesPage> {
           "Zones",
           style: TextStyle(color: Colors.white),
         ),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SettingsPage(),
+                  ),
+                );
+              },
+              icon: const Icon(
+                Icons.add,
+                size: 30,
+                color: Colors.white,
+              ))
+        ],
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _fetchZones(),
@@ -58,17 +75,24 @@ class _ZonesPageState extends State<ZonesPage> {
                 final zone = zones[index];
                 final zoneName = zone['name'] ?? "Nom inconnu";
 
-                return ListTile(
-                  title: Text(zoneName),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            SingleZonePage(zoneName: zoneName),
-                      ),
-                    );
-                  },
+                return Card(
+                  elevation: 4,
+                  child: ListTile(
+                    title: Text(
+                      zoneName,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              SingleZonePage(zoneName: zoneName),
+                        ),
+                      );
+                    },
+                    trailing: const Icon(Icons.arrow_forward_ios),
+                  ),
                 );
               },
             );

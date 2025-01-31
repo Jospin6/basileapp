@@ -46,7 +46,8 @@ class _SettingsPageState extends State<SettingsPage>
         bottom: TabBar(
           controller: _tabController,
           labelColor: Colors.white,
-          indicatorColor: Colors.black,
+          indicatorColor: Colors.white,
+          unselectedLabelColor: const Color.fromARGB(255, 209, 208, 208),
           tabs: const [
             Tab(text: "Infos"),
             Tab(text: "Autres"),

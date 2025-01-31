@@ -7,6 +7,7 @@ import 'package:basileapp/screens/connexionPage.dart';
 import 'package:basileapp/screens/settingsPage.dart';
 import 'package:basileapp/screens/singleAgentPage.dart';
 import 'package:basileapp/screens/taxesPage.dart';
+import 'package:basileapp/screens/zonesPage.dart';
 import 'package:basileapp/widgets/adminDashboard.dart';
 
 import 'package:flutter/material.dart';
@@ -207,6 +208,22 @@ class _HomepageState extends State<Homepage> {
                     );
                   },
                 ),
+
+                if (agentRole == "Admin")
+                ListTile(
+                  leading: const Icon(Icons.area_chart_outlined),
+                  title: const Text('Zones'),
+                  onTap: () {
+                    Navigator.pop(context); // Ferme la Drawer
+                    // Ajoutez une action ici
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ZonesPage(),
+                      ),
+                    );
+                  },
+                ),
               ListTile(
                 leading: const Icon(Icons.attach_money),
                 title: const Text('Taxes'),
@@ -239,7 +256,7 @@ class _HomepageState extends State<Homepage> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.person),
+                leading: const Icon(Icons.login_outlined),
                 title: const Text('Deconnexion'),
                 onTap: () {
                   Navigator.pop(context); // Ferme la Drawer
