@@ -20,6 +20,7 @@ class _ClientPageState extends State<ClientPage> {
   late SharedData sharedData;
   String? agentZone;
   bool isConnect = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -27,6 +28,19 @@ class _ClientPageState extends State<ClientPage> {
     loadUserData();
     _fetchClients();
     _checkConnection();
+  }
+
+  Future<void> _handleClick() async {
+    setState(() {
+      _isLoading = true; // Affiche le CircularProgressIndicator
+    });
+
+    // Simule une tâche asynchrone (exemple : API call)
+    await Future.delayed(Duration(seconds: 10));
+
+    setState(() {
+      _isLoading = false; // Cache le loader après exécution
+    });
   }
 
   Future<bool> checkInternetConnection() async {
@@ -95,19 +109,24 @@ class _ClientPageState extends State<ClientPage> {
                 color: Colors.white,
                 size: 30,
               )),
-          // if (isConnect)
-            IconButton(
-                onPressed: () async {
-                  await syncData.synchronizeData();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Synchronisation terminée !')),
-                  );
-                },
-                icon: const Icon(
-                  Icons.sync,
+          _isLoading
+              ? const CircularProgressIndicator(
                   color: Colors.white,
-                  size: 30,
-                ))
+                )
+              : IconButton(
+                  onPressed: () async {
+                    _handleClick();
+                    await syncData.synchronizeData();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text('Synchronisation terminée !')),
+                    );
+                  },
+                  icon: const Icon(
+                    Icons.sync,
+                    color: Colors.white,
+                    size: 30,
+                  ))
         ],
       ),
       body: Column(
@@ -124,8 +143,8 @@ class _ClientPageState extends State<ClientPage> {
                       child: Text(client['name'].substring(0, 1).toUpperCase()),
                     ),
                     title: Text('${client['name']} ${client['postName']}'),
-                    subtitle:
-                        Text('${client['commerce']},\n télé: ${client['phone']}'),
+                    subtitle: Text(
+                        '${client['commerce']},\n télé: ${client['phone']}'),
                     onTap: () {
                       Navigator.push(
                         context,
