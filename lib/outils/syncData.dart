@@ -13,6 +13,9 @@ class SyncData {
       SharedPreferences prefs = await SharedPreferences.getInstance();
 
       String? idAgent = prefs.getString('id');
+      String? agentName = prefs.getString('name');
+      String? agentSurname = prefs.getString('surname');
+
       if (idAgent == null || idAgent.isEmpty) {
         print("❌ ID utilisateur introuvable !");
         return;
@@ -74,12 +77,13 @@ class SyncData {
       for (var paiement in paiements) {
         await firestore.collection('paiements').add({
           'id_paiement': paiement['id'].toString(),
-          'id_client': paiement['id_client'].toString(),
-          'id_taxe': paiement['id_taxe'].toString(),
+          'id_client': '${paiement['client_name'].toString()} ${paiement['client_postName'].toString()}',
+          'id_taxe': paiement['tax_name'].toString(),
           'id_agent': paiement['id_agent'].toString(),
           'amount_tot': paiement['amount_tot'].toString(),
           'amount_recu': paiement['amount_recu'].toString(),
           'zone': paiement['zone'].toString(),
+          'agent_name': '$agentName $agentSurname',
           'created_at': paiement['created_at'].toString(),
         }).then((_) {
           print("✅ Paiement ajouté : ${paiement['id']}");
@@ -92,11 +96,12 @@ class SyncData {
       for (var history in paiementsHistory) {
         await firestore.collection('paiements_history').add({
           'id_history': history['id'].toString(),
-          'id_client': history['id_client'].toString(),
-          'id_taxe': history['id_taxe'].toString(),
+          'id_client': '${history['client_name'].toString()} ${history['client_postName'].toString()}',
+          'id_taxe': history['tax_name'].toString(),
           'id_agent': history['id_agent'].toString(),
           'amount_recu': history['amount_recu'].toString(),
           'zone': history['zone'].toString(),
+          'agent_name': '$agentName $agentSurname',
           'created_at': history['created_at'].toString(),
         }).then((_) {
           print("✅ Historique ajouté : ${history['id']}");

@@ -186,11 +186,11 @@ class _ZonedashboardtabState extends State<Zonedashboardtab> {
                       margin: const EdgeInsets.symmetric(
                           vertical: 8, horizontal: 16),
                       child: ListTile(
-                        title: Text("👤 ${payment['id_client']}"),
+                        title: Text("👤 ${payment['id_client']} | taxe: ${payment['id_taxe'] ?? ''}"),
                         subtitle: Text(
                           "💰 Montant: \$${payment['amount_recu']}\n📅 ${formatDate.formatCreatedAt(payment['created_at'])}",
                         ),
-                        trailing: Text("🆔 Agent : ${payment['id_agent']}"),
+                        trailing: Text("🆔 Agent : ${payment['agent_name'] ?? ''}"),
                       ),
                     );
                   },

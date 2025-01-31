@@ -272,7 +272,7 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> getAllPayments() async {
     final db = await database;
     return await db.rawQuery('''
-      SELECT paiements.*, clients.name AS client_name, taxes.amount AS tax_amount  
+      SELECT paiements.*, clients.name AS client_name, clients.postName AS client_postName, taxes.amount AS tax_amount, taxes.name AS tax_name  
       FROM paiements  
       LEFT JOIN clients ON paiements.id_client = clients.id  
       LEFT JOIN taxes ON paiements.id_taxe = taxes.id  
@@ -443,7 +443,7 @@ class DatabaseHelper {
       int clientId) async {
     final db = await database;
     return await db.rawQuery('''
-      SELECT paiements_history.*, clients.name AS client_name, taxes.amount AS tax_amount  
+      SELECT paiements_history.*, clients.name AS client_name, clients.postName AS client_postName, taxes.amount AS tax_amount, taxes.name AS tax_name   
       FROM paiements_history  
       LEFT JOIN clients ON paiements_history.id_client = clients.id  
       LEFT JOIN taxes ON paiements_history.id_taxe = taxes.id  
