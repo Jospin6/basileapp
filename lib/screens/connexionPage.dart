@@ -119,6 +119,7 @@ class _ConnexionPageState extends State<ConnexionPage> {
       String zone = userData['zone'];
       String role = userData['role'];
       String numTeleAdmin = userData['numTeleAdmin'] ?? "0976774112";
+      String isAgent = userData['isAgent'];
 
       sharedData.setId(id);
       sharedData.setName(name);
@@ -126,6 +127,7 @@ class _ConnexionPageState extends State<ConnexionPage> {
       sharedData.setZone(zone);
       sharedData.setRole(role);
       sharedData.setNumTeleAdmin(numTeleAdmin);
+      sharedData.setIsAgent(isAgent);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Connexion réussie !')),

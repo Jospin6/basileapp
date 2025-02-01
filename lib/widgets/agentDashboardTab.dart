@@ -22,6 +22,7 @@ class AgentDashboardTab extends StatefulWidget {
 }
 
 class _AgentDashboardTabState extends State<AgentDashboardTab> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   DatabaseHelper dbHelper = DatabaseHelper();
   Formatdate formatDate = Formatdate();
 
@@ -231,7 +232,8 @@ class _AgentDashboardTabState extends State<AgentDashboardTab> {
                               '💰 Montant: ${payment['amount_recu']} \$ | Taxe: ${payment['taxe_name']}'),
                           subtitle: Text(
                               '👤 ${payment['client_name']}\n📅: ${formatDate.formatCreatedAt(payment['created_at'])}'),
-                          trailing: payment['amount_recu'] < payment['amount_tot']
+                          trailing: payment['amount_recu'] <
+                                  payment['amount_tot']
                               ? const Icon(Icons.warning,
                                   color: Colors
                                       .red) // Icône d'avertissement si paiement incomplet
@@ -246,6 +248,44 @@ class _AgentDashboardTabState extends State<AgentDashboardTab> {
               },
             ),
           ),
+        if (widget.agentRole == "Admin")
+          Container(
+            margin: const EdgeInsets.all(10),
+            width: MediaQuery.of(context).size.width,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                    onPressed: () async {
+                      try {
+                        await _firestore
+                            .collection('users')
+                            .doc(widget.agentID)
+                            .update({
+                          'isAgent': "0",
+                        });
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content:
+                                Text("✅ L'utilisateur n'est plus un agent !"),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                      } catch (e) {
+                        print("❌ Erreur lors de la mise à jour : $e");
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("❌ Erreur lors de la mise à jour !"),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    },
+                    icon: const Icon(Icons.delete))
+              ],
+            ),
+          )
       ],
     );
   }

@@ -27,6 +27,7 @@ class _NewAgentPageState extends State<NewAgentPage> {
   String? numTeleAdmin;
   String? agentName;
   String? agentSurname;
+  String isAgent = "1";
 
   // Liste des zones d'activité
   final List<String> _zones = [];
@@ -88,6 +89,7 @@ class _NewAgentPageState extends State<NewAgentPage> {
         "zone": _selectedZone,
         "role": _selectedRole,
         "numTeleAdmin": numTeleAdmin,
+        "isAgent": isAgent,
       };
 
       try {

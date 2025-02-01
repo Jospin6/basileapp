@@ -4,6 +4,7 @@ import 'package:basileapp/outils/sharedData.dart';
 import 'package:basileapp/screens/agentsPage.dart';
 import 'package:basileapp/screens/clientPage.dart';
 import 'package:basileapp/screens/connexionPage.dart';
+import 'package:basileapp/screens/notAgent.dart';
 import 'package:basileapp/screens/settingsPage.dart';
 import 'package:basileapp/screens/singleAgentPage.dart';
 import 'package:basileapp/screens/taxesPage.dart';
@@ -29,6 +30,7 @@ class _HomepageState extends State<Homepage> {
   String? agentSurname;
   String? agentZone;
   String? agentRole;
+  String? isAgent;
   int clientCount = 0;
   double dailyAmount = 0;
   double totalDebt = 0;
@@ -36,6 +38,7 @@ class _HomepageState extends State<Homepage> {
   @override
   void initState() {
     super.initState();
+    // checkAgent();
     loadUserData();
     fetchClientCount();
     fetchDailyAmount();
@@ -52,12 +55,14 @@ class _HomepageState extends State<Homepage> {
       String newAgentSurname = sharedData.getAgentSurname().toString();
       String newAgentZone = sharedData.getAgentZone().toString();
       String newAgentRole = sharedData.getAgentRole().toString();
+      String newIsAgent = sharedData.getIsAgent().toString();
 
       print("id: $newAgentID");
       print("name: $newAgentName");
       print("sur: $newAgentSurname");
       print("zone: $newAgentZone");
       print("role: $newAgentRole");
+      print("isAgent: $newIsAgent");
 
       // Mise à jour de l'état uniquement si les valeurs changent
       setState(() {
@@ -66,10 +71,21 @@ class _HomepageState extends State<Homepage> {
         agentSurname = newAgentSurname;
         agentZone = newAgentZone;
         agentRole = newAgentRole;
+        isAgent = newIsAgent;
       });
     } catch (e) {
       // Log ou gestion de l'erreur
       print("Erreur lors du chargement des données utilisateur : $e");
+    }
+  }
+
+  void checkAgent() {
+    if (isAgent == "0") {
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const NotAgent(),
+          ));
     }
   }
 

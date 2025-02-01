@@ -72,12 +72,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> loadUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? id = prefs.getString('id');
-    String? name = prefs.getString('name');
-    String? surname = prefs.getString('surname');
-    String? zone = prefs.getString('zone');
 
     if (id != null) {
-      print("ID: $id, Name: $name, Surname: $surname, Zone: $zone");
       setState(() {
         agentID = id;
       });
@@ -106,6 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
         String surname = userData['surname'] ?? '';
         String zone = userData['zone'] ?? '';
         String role = userData['role'] ?? '';
+        String estAgent = userData['isAgent'] ?? '';
 
         // Stocke les informations dans SharedPreferences
         SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -114,6 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
         await prefs.setString('surname', surname);
         await prefs.setString('zone', zone);
         await prefs.setString('role', role);
+        await prefs.setString('isAgent', estAgent);
 
         print("Données utilisateur stockées avec succès.");
       } else {

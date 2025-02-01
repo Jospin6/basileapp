@@ -24,6 +24,7 @@ class SharedData {
   String getAgentZone() => _prefs.getString("zone") ?? '';
   String getAgentRole() => _prefs.getString("role") ?? '';
   String getNumTeleAdmin() => _prefs.getString("numTeleAdmin") ?? '';
+  String getIsAgent() => _prefs.getString("isAgent") ?? '';
 
   // Method to set shared preferences
   Future<void> setSharedPreferences(
@@ -64,6 +65,10 @@ class SharedData {
 
   Future<void> setNumTeleAdmin(String numTeleAdmin) {
     return _prefs.setString('numTeleAdmin', numTeleAdmin);
+  }
+
+  Future<void> setIsAgent(String isAgent) {
+    return _prefs.setString('isAgent', isAgent);
   }
 
   Future<void> clearSharedPreferences() async {
