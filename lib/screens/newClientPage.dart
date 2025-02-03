@@ -30,19 +30,6 @@ class _NewClientPageState extends State<NewClientPage> {
     loadUserData();
   }
 
-  Future<void> _handleClick() async {
-    setState(() {
-      _isLoading = true; // Affiche le CircularProgressIndicator
-    });
-
-    // Simule une tâche asynchrone (exemple : API call)
-    await Future.delayed(Duration(seconds: 3));
-
-    setState(() {
-      _isLoading = false; // Cache le loader après exécution
-    });
-  }
-
   Future<void> loadUserData() async {
     sharedData = SharedData();
     setState(() {
@@ -154,7 +141,9 @@ class _NewClientPageState extends State<NewClientPage> {
                         )
                       : ElevatedButton(
                           onPressed: () async {
-                            _handleClick();
+                            setState(() {
+                              _isLoading = true;
+                            });
                             if (_formKey.currentState!.validate()) {
                               // Traitement des données
                               final clientData = {

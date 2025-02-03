@@ -20,24 +20,13 @@ class _CardAddTaxWidgetState extends State<CardAddTaxWidget> {
   String? _selectedTaxType;
   bool _isLoading = false;
 
-  Future<void> _handleClick() async {
-    setState(() {
-      _isLoading = true; // Affiche le CircularProgressIndicator
-    });
-
-    // Simule une tâche asynchrone (exemple : API call)
-    await Future.delayed(Duration(seconds: 3));
-
-    setState(() {
-      _isLoading = false; // Cache le loader après exécution
-    });
-  }
-
   // Types de taxes
   final List<String> _taxTypes = ["Journalier", "Mensuel", "Annuel"];
 
   void _submitTaxForm() async {
-    _handleClick();
+    setState(() {
+      _isLoading = true;
+    });
     if (_selectedTaxType != null &&
         _taxNameController.text.isNotEmpty &&
         _taxAmountController.text.isNotEmpty) {

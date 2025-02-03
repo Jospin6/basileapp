@@ -30,19 +30,6 @@ class _ClientPageState extends State<ClientPage> {
     _checkConnection();
   }
 
-  Future<void> _handleClick() async {
-    setState(() {
-      _isLoading = true; // Affiche le CircularProgressIndicator
-    });
-
-    // Simule une tâche asynchrone (exemple : API call)
-    await Future.delayed(Duration(seconds: 10));
-
-    setState(() {
-      _isLoading = false; // Cache le loader après exécution
-    });
-  }
-
   Future<bool> checkInternetConnection() async {
     final connectivityResult = await Connectivity().checkConnectivity();
 
@@ -110,12 +97,18 @@ class _ClientPageState extends State<ClientPage> {
                 size: 30,
               )),
           _isLoading
-              ? const CircularProgressIndicator(
-                  color: Colors.white,
+              ? const SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                  ),
                 )
               : IconButton(
                   onPressed: () async {
-                    _handleClick();
+                    setState(() {
+                      _isLoading = true;
+                    });
                     await syncData.synchronizeData();
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(

@@ -42,19 +42,6 @@ class _NewAgentPageState extends State<NewAgentPage> {
     loadUserData();
   }
 
-  Future<void> _handleClick() async {
-    setState(() {
-      _isLoading = true; // Affiche le CircularProgressIndicator
-    });
-
-    // Simule une tâche asynchrone (exemple : API call)
-    await Future.delayed(Duration(seconds: 3));
-
-    setState(() {
-      _isLoading = false; // Cache le loader après exécution
-    });
-  }
-
   Future<void> loadUserData() async {
     sharedData = SharedData();
     setState(() {
@@ -79,7 +66,9 @@ class _NewAgentPageState extends State<NewAgentPage> {
   }
 
   void _submitForm() async {
-    _handleClick();
+    setState(() {
+      _isLoading = true;
+    });
     if (_formKey.currentState!.validate()) {
       final agentData = {
         "name": _nameController.text,

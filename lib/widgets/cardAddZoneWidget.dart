@@ -13,21 +13,10 @@ class _CardAddZoneWidgetState extends State<CardAddZoneWidget> {
   FirebaseServices firebaseServices = FirebaseServices();
   bool _isLoading = false;
 
-  Future<void> _handleClick() async {
-    setState(() {
-      _isLoading = true; // Affiche le CircularProgressIndicator
-    });
-
-    // Simule une tâche asynchrone (exemple : API call)
-    await Future.delayed(Duration(seconds: 3));
-
-    setState(() {
-      _isLoading = false; // Cache le loader après exécution
-    });
-  }
-
   void _submitZoneForm() async {
-    _handleClick();
+    setState(() {
+      _isLoading = true;
+    });
     if (_zoneNameController.text.isNotEmpty) {
       String zoneName = _zoneNameController.text;
       firebaseServices.addZone(zoneName);
