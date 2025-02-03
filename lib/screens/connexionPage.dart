@@ -16,6 +16,7 @@ class _ConnexionPageState extends State<ConnexionPage> {
   final TextEditingController _passwordController = TextEditingController();
   FirebaseServices firebaseServices = FirebaseServices();
   late SharedData sharedData;
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -73,26 +74,33 @@ class _ConnexionPageState extends State<ConnexionPage> {
                   },
                 ),
                 const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      // Logique de connexion
-                      await _loginUser();
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 40.0, vertical: 12.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
-                  ),
-                  child: const Text(
-                    'Se connecter',
-                    style: TextStyle(fontSize: 16, color: Colors.white),
-                  ),
-                ),
+                _isLoading
+                    ? const CircularProgressIndicator(
+                        color: Color.fromRGBO(173, 104, 0, 1),
+                      )
+                    : ElevatedButton(
+                        onPressed: () async {
+                          setState(() {
+                            _isLoading = true;
+                          });
+                          if (_formKey.currentState!.validate()) {
+                            // Logique de connexion
+                            await _loginUser();
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 40.0, vertical: 12.0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          backgroundColor: const Color.fromRGBO(173, 104, 0, 1),
+                        ),
+                        child: const Text(
+                          'Se connecter',
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ),
               ],
             ),
           ),
