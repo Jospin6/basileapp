@@ -127,7 +127,7 @@ class _ConnexionPageState extends State<ConnexionPage> {
       String zone = userData['zone'];
       String role = userData['role'];
       String numTeleAdmin = userData['numTeleAdmin'] ?? "0976774112";
-      String isAgent = userData['isAgent'];
+      String isAgent = userData['isAgent'] ?? "1";
 
       sharedData.setId(id);
       sharedData.setName(name);
