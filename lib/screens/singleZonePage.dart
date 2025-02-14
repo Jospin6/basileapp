@@ -1,3 +1,4 @@
+import 'package:basileapp/screens/editZonePage.dart';
 import 'package:basileapp/widgets/zoneAgentsTab.dart';
 import 'package:basileapp/widgets/zoneClientTab.dart';
 import 'package:basileapp/widgets/zoneDashboardTab.dart';
@@ -43,6 +44,18 @@ class _SingleZonePageState extends State<SingleZonePage>
           widget.zoneName,
           style: const TextStyle(color: Colors.white),
         ),
+        actions: [
+          IconButton(
+              onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditZonePage(
+                        zoneName: widget.zoneName,
+                      ),
+                    ),
+                  ),
+              icon: const Icon(Icons.edit))
+        ],
         bottom: TabBar(
           controller: _tabController,
           labelColor: Colors.white,
